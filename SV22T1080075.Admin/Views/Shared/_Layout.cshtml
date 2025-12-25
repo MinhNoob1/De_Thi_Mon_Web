@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - Admin Panel</title>
+
+    <link rel="stylesheet" href="~/vendors/feather/feather.css">
+    <link rel="stylesheet" href="~/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="~/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="~/vendors/typicons/typicons.css">
+    <link rel="stylesheet" href="~/vendors/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="~/vendors/css/vendor.bundle.base.css">
+
+    <link rel="stylesheet" href="~/css/vertical-layout-light/style.css">
+    <link rel="shortcut icon" href="~/images/favicon.png" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div class="container-scroller">
+        @await Html.PartialAsync("_Navbar")
+
+        <div class="container-fluid page-body-wrapper">
+            @await Html.PartialAsync("_Sidebar")
+
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    @RenderBody()
+                </div>
+
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024.</span>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/vendors/js/vendor.bundle.base.js"></script>
+    <script src="~/vendors/chart.js/Chart.min.js"></script>
+    <script src="~/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="~/vendors/progressbar.js/progressbar.min.js"></script>
+
+    <script src="~/js/off-canvas.js"></script>
+    <script src="~/js/hoverable-collapse.js"></script>
+    <script src="~/js/template.js"></script>
+    <script src="~/js/settings.js"></script>
+    <script src="~/js/todolist.js"></script>
+    <script src="~/js/dashboard.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

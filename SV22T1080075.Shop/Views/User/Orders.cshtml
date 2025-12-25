@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Lịch sử đơn hàng";
+}
+
+    <div class="card border-0 shadow-sm rounded-4 p-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0">Lịch sử đơn hàng</h3>
+            <select class="form-select border-0 bg-light w-auto">
+                <option>Tất cả đơn hàng</option>
+                <option>Hoàn thành</option>
+                <option>Đang giao</option>
+            </select>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead class="text-uppercase bg-light">
+                    <tr>
+                        <th class="py-3 border-0">Mã đơn</th>
+                        <th class="py-3 border-0">Ngày đặt</th>
+                        <th class="py-3 border-0">Trạng thái</th>
+                        <th class="py-3 border-0">Tổng</th>
+                        <th class="py-3 border-0"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-4 fw-bold">#FD-2025-001</td>
+                        <td class="py-4 text-muted">22/12/2025</td>
+                        <td class="py-4">
+                            <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill">Hoàn thành</span>
+                        </td>
+                        <td class="py-4 fw-bold">$125.00</td>
+                        <td class="py-4 text-end">
+                            <button class="btn btn-outline-dark btn-sm rounded-2">Chi tiết</button>
+                        </td>
+                    </tr>
+                    @* Có thể thêm các dòng đơn hàng khác ở đây *@
+                </tbody>
+            </table>
+        </div>
+    </div>

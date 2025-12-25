@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = "Cửa hàng - FoodMart";
+}
+
+<section class="py-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="sidebar-filter mt-5">
+                    @* 1. Tìm kiếm theo tên *@
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="mb-3">Tìm kiếm</h5>
+                        <form id="search-name-form">
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light border-0" placeholder="Nhập tên sản phẩm..." aria-label="Search">
+                                <button class="btn btn-primary" type="submit">
+                                    <svg width="20" height="20"><use xlink:href="#search"></use></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    @* 2. Lọc theo loại sản phẩm *@
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="mb-3">Danh mục</h5>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="cat-all" checked>
+                                    <label class="form-check-label" for="cat-all">Tất cả</label>
+                                </div>
+                            </li>
+                            <li class="mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="cat-fruits">
+                                    <label class="form-check-label" for="cat-fruits">Trái cây & Rau củ</label>
+                                </div>
+                            </li>
+                            <li class="mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="cat-drinks">
+                                    <label class="form-check-label" for="cat-drinks">Đồ uống & Nước ép</label>
+                                </div>
+                            </li>
+                            <li class="mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="cat-bakery">
+                                    <label class="form-check-label" for="cat-bakery">Bánh ngọt & Kẹo</label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    @* 3. Lọc theo khoảng giá (Price Range) *@
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="mb-3">Khoảng giá</h5>
+                        <div class="price-range">
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <input type="number" class="form-control bg-light border-0" placeholder="Từ ($)" min="0">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control bg-light border-0" placeholder="Đến ($)" min="0">
+                                </div>
+                            </div>
+                            <button class="btn btn-yellow w-100 text-uppercase fw-bold rounded-2">Áp dụng</button>
+                        </div>
+                    </div>
+
+                    @* Banner quảng cáo nhỏ (tùy chọn) *@
+                    <div class="card border-0 rounded-4 overflow-hidden shadow-sm">
+                        <img src="~/images/ad-image-1.png" class="img-fluid" alt="Ad">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center my-5">
+                    <h2 class="section-title mb-0">Sản phẩm</h2>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted small">Sắp xếp:</span>
+                        <select class="form-select border-0 bg-light w-auto rounded-3">
+                            <option selected>Mới nhất</option>
+                            <option>Giá: Thấp đến Cao</option>
+                            <option>Giá: Cao đến Thấp</option>
+                            <option>Phổ biến nhất</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    @* Ví dụ một sản phẩm (Sử dụng cấu trúc template sẵn có) *@
+                    <div class="col">
+                        <div class="product-item">
+                            <span class="badge bg-success position-absolute m-3">-30%</span>
+                            <a href="#" class="btn-wishlist"><svg width="24" height="24"><use xlink:href="#heart"></use></svg></a>
+                            <figure>
+                                <a href="index.html" title="Product Title">
+                                    <img src="images/thumb-bananas.png" class="tab-image">
+                                </a>
+                            </figure>
+                            <h3>Sunstar Fresh Melon Juice</h3>
+                            <span class="qty">1 Unit</span><span class="rating"><svg width="24" height="24" class="text-primary"><use xlink:href="#star-solid"></use></svg> 4.5</span>
+                            <span class="price">$18.00</span>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="input-group product-qty">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
+                                            <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                                        </button>
+                                    </span>
+                                    <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
+                                            <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+                                        </button>
+                                    </span>
+                                </div>
+                                <a href="#" class="nav-link">Add to Cart <iconify-icon icon="uil:shopping-cart"></iconify-icon></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Lặp lại các sản phẩm khác ở đây... *@
+
+                </div>
+
+                <nav class="mt-5 py-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled"><a class="page-link border-0 rounded-2 me-2" href="#">❮</a></li>
+                        <li class="page-item active"><a class="page-link border-0 rounded-2 me-2" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link border-0 rounded-2 me-2" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link border-0 rounded-2" href="#">❯</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,144 @@
+﻿@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<section class="py-5">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-header my-5">
+                    <h2 class="section-title">Giỏ hàng của bạn</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="text-uppercase">
+                            <tr>
+                                <th scope="col" class="border-0">Sản phẩm</th>
+                                <th scope="col" class="border-0">Giá</th>
+                                <th scope="col" class="border-0">Số lượng</th>
+                                <th scope="col" class="border-0">Tổng</th>
+                                <th scope="col" class="border-0"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="py-4 border-0">
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/images/thumb-bananas.png" alt="bananas" class="img-fluid rounded-3" style="width: 80px;">
+                                        <div class="ms-3">
+                                            <h6 class="mb-0">Sunstar Fresh Melon Juice</h6>
+                                            <span class="text-muted">1 Unit</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 border-0">
+                                    <p class="mb-0 fw-bold">$18.00</p>
+                                </td>
+                                <td class="py-4 border-0">
+                                    @* Sử dụng cấu trúc quantity-picker có sẵn trong template *@
+                                    <div class="input-group product-qty" style="width: 130px;">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
+                                                <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                                            </button>
+                                        </span>
+                                        <input type="text" name="quantity" class="form-control input-number text-center" value="1">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
+                                                <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="py-4 border-0">
+                                    <p class="mb-0 fw-bold">$18.00</p>
+                                </td>
+                                <td class="py-4 border-0">
+                                    <a href="#" class="text-muted">
+                                        <svg width="24" height="24"><use xlink:href="#trash"></use></svg>
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="py-4 border-bottom">
+                                    <div class="d-flex align-items-center">
+                                        <img src="~/images/thumb-biscuits.png" alt="biscuits" class="img-fluid rounded-3" style="width: 80px;">
+                                        <div class="ms-3">
+                                            <h6 class="mb-0">Fresh Grapes</h6>
+                                            <span class="text-muted">1 Unit</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 border-bottom">
+                                    <p class="mb-0 fw-bold">$8.00</p>
+                                </td>
+                                <td class="py-4 border-bottom">
+                                    <div class="input-group product-qty" style="width: 130px;">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
+                                                <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                                            </button>
+                                        </span>
+                                        <input type="text" name="quantity" class="form-control input-number text-center" value="2">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
+                                                <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="py-4 border-bottom">
+                                    <p class="mb-0 fw-bold">$16.00</p>
+                                </td>
+                                <td class="py-4 border-bottom">
+                                    <a href="#" class="text-muted">
+                                        <svg width="24" height="24"><use xlink:href="#trash"></use></svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/" class="btn btn-outline-dark text-uppercase px-4 py-3">Tiếp tục mua hàng</a>
+                    <button class="btn btn-dark text-uppercase px-4 py-3">Cập nhật giỏ hàng</button>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mt-5 mt-lg-0">
+                <div class="card bg-light border-0 p-4 rounded-4">
+                    <h4 class="mb-4">Tổng đơn hàng</h4>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Tạm tính</span>
+                        <span class="fw-bold">$34.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Phí vận chuyển</span>
+                        <span class="fw-bold">$5.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fs-5 fw-bold">Tổng cộng</span>
+                        <span class="fs-5 fw-bold text-primary">$39.00</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <form class="d-flex gap-2">
+                            <input type="text" class="form-control" placeholder="Mã giảm giá">
+                            <button class="btn btn-yellow text-uppercase">Áp dụng</button>
+                        </form>
+                    </div>
+
+                    <a href="/Checkout" class="btn btn-primary btn-lg text-uppercase w-100 py-3">Thanh toán ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
