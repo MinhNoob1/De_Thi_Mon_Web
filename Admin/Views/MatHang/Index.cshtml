@@ -1,0 +1,89 @@
+﻿@model PaginatedList<MatHang>
+
+@{
+    ViewData["Title"] = "Danh sách mặt hàng";
+}
+
+<h1>Mặt Hàng</h1>
+
+<form asp-action="Index" method="get" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <input type="text" name="searchName" class="form-control" placeholder="Tìm tên sản phẩm...">
+    </div>
+    <div class="col-md-3">
+        <select name="maLoai" class="form-control">
+            <option value="">-- Chọn loại hàng --</option>
+            @foreach (var item in ViewBag.LoaiHangs)
+            {
+                <option value="@item.MaLoaiHang">@item.TenLoaiHang</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="giaMin" class="form-control currency-input" placeholder="Giá từ...">
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="giaMax" class="form-control currency-input" placeholder="đến...">
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+    </div>
+</form>
+
+<hr />
+
+<div id="product-container">
+    <partial name="List" model="Model" />
+</div>
+
+@section Scripts {
+    <script>
+        function loadPage(page) {
+            // Hàm phụ để loại bỏ dấu chấm và chuyển về số thuần túy
+            const getRawNumber = (selector) => {
+                let val = $(selector).val() || "";
+                return val.replace(/\./g, ""); // Xóa hết dấu chấm
+            };
+
+            let data = {
+                page: page,
+                searchName: $('input[name="searchName"]').val() || null,
+                maLoai: $('select[name="maLoai"]').val() || null,
+                giaMin: getRawNumber('input[name="giaMin"]') || null, // Gửi "1000000" thay vì "1.000.000"
+                giaMax: getRawNumber('input[name="giaMax"]') || null
+            };
+
+            $.ajax({
+                url: '@Url.Action("Index", "MatHang")',
+                type: 'GET',
+                data: data,
+                success: function (result) {
+                    $('#product-data-container').html(result);
+                }
+            });
+        }
+
+        // Chặn submit form mặc định để dùng AJAX cho cả tìm kiếm nếu muốn
+        $('form').submit(function (e) {
+            e.preventDefault();
+            loadPage(1);
+        });
+
+        $(document).ready(function () {
+            // Sự kiện khi người dùng gõ vào ô nhập liệu
+            $(document).on('input', '.currency-input', function (e) {
+                // 1. Lấy giá trị hiện tại, loại bỏ tất cả ký tự không phải số
+                let value = $(this).val().replace(/\D/g, "");
+
+                // 2. Định dạng lại số với dấu chấm phân cách hàng nghìn
+                if (value !== "") {
+                    // Sử dụng Intl.NumberFormat của trình duyệt để định dạng theo chuẩn VN
+                    let formattedValue = new Intl.NumberFormat('vi-VN').format(value);
+                    $(this).val(formattedValue);
+                } else {
+                    $(this).val("");
+                }
+            });
+        });
+    </script>
+}

@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using DomainModels;
+using DAL;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;

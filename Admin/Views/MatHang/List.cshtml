@@ -1,0 +1,77 @@
+﻿@model PaginatedList<MatHang>
+
+@* Bao bọc bảng bằng div có min-height để giữ vị trí nút phân trang cố định *@
+<div class="table-responsive" style="min-height: 550px;">
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Ảnh</th>
+                <th>Tên mặt hàng</th>
+                <th>Loại</th>
+                <th>Giá bán</th>
+                <th>Tồn kho</th>
+                <th>Trạng thái</th>
+                <th style="width: 150px;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        <img src="/images/@(item.HinhAnh ?? "no-image.png")" width="50" height="50" style="object-fit:cover" onerror="this.src='/images/no-image.png'" />
+                    </td>
+                    <td>@item.TenMatHang</td>
+                    <td>@item.LoaiHang?.TenLoaiHang</td>
+                    <td>@item.GiaBan.ToString("N0")</td>
+                    <td>@item.SoLuong</td>
+                    <td>
+                        @if (item.DangBan == true)
+                        {
+                            <span class="badge bg-success">Đang bán</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Ngừng bán</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.MaMatHang" class="btn btn-sm btn-info">Sửa</a>
+                        <a asp-action="Delete" asp-route-id="@item.MaMatHang" class="btn btn-sm btn-danger">Xóa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@* Phần phân trang này bây giờ sẽ luôn nằm dưới khoảng trống 550px ở trên *@
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center mt-3">
+        @* Nút Quay lại *@
+        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" href="javascript:void(0)" onclick="loadPage(@(Model.PageIndex - 1))">
+                <span aria-hidden="true">&laquo;</span> Trước
+            </a>
+        </li>
+
+        @* Danh sách số trang *@
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                <a class="page-link" href="javascript:void(0)" onclick="loadPage(@i)">@i</a>
+            </li>
+        }
+
+        @* Nút Tiếp theo *@
+        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+            <a class="page-link" href="javascript:void(0)" onclick="loadPage(@(Model.PageIndex + 1))">
+                Sau <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="text-center text-muted mt-2">
+    Trang @Model.PageIndex / @Model.TotalPages
+</div>
