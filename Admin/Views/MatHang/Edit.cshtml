@@ -1,14 +1,13 @@
 ﻿@model MatHang
-
 @{
-    ViewData["Title"] = "Chỉnh sửa mặt hàng";
+    bool isEdit = Model.MaMatHang > 0;
+    ViewData["Title"] = isEdit ? "Chỉnh sửa mặt hàng" : "Thêm mặt hàng mới";
 }
-
 <div class="container mt-4">
-    <h2>Chỉnh sửa sản phẩm: @Model.TenMatHang</h2>
+    <h2>@(isEdit ? $"Chỉnh sửa sản phẩm: Mã số {Model.MaMatHang}" : "Thêm mặt hàng mới")</h2>
     <hr />
-    <form asp-action="Edit">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <form asp-action="@(isEdit ? "Edit" : "Create")" enctype="multipart/form-data">
+        <div asp-validation-summary="All" class="text-danger"></div>
         <input type="hidden" asp-for="MaMatHang" />
 
         <div class="row">
@@ -34,22 +33,37 @@
                         <input asp-for="SoLuong" class="form-control" type="number" />
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DonViTinh" class="form-label">Đơn vị tính</label>
+                        <input asp-for="DonViTinh" class="form-control" placeholder="VD: Kg, Lạng, Bó..." />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DangBan" class="form-check-label">Đang kinh doanh</label>
+                        <input asp-for="DangBan" class="form-check-input" type="checkbox" />
+                    </div>
+                </div>
+
             </div>
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label asp-for="HinhAnh" class="form-label">Tên file ảnh</label>
-                    <input asp-for="HinhAnh" class="form-control" />
-                </div>
+                    <label class="form-label">Chọn hình ảnh sản phẩm</label>
+                    <input type="file" name="uploadImage" id="uploadImage" class="form-control" accept="image/*" />
 
-                <div class="mb-3">
-                    <label asp-for="DonViTinh" class="form-label">Đơn vị tính</label>
-                    <input asp-for="DonViTinh" class="form-control" placeholder="VD: Cái, Kg, Thùng..." />
-                </div>
+                    <input type="hidden" asp-for="HinhAnh" />
 
-                <div class="form-check mb-3 mt-4">
-                    <input asp-for="DangBan" class="form-check-input" type="checkbox" />
-                    <label asp-for="DangBan" class="form-check-label">Đang kinh doanh</label>
+                    @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                    {
+                        <div class="mt-2">
+                            <p>Ảnh hiện tại:</p>
+                            <img id="imagePreview"
+                                 src="@(string.IsNullOrEmpty(Model.HinhAnh) ? "/images/no-image.png" : "/images/MatHang/" + Model.HinhAnh)"
+                                 width="300" 
+                                 class="img-thumbnail" />
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -60,7 +74,9 @@
         </div>
 
         <div class="mt-3">
-            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            <button type="submit" class="btn btn-primary">
+                @(isEdit ? "Lưu thay đổi" : "Thêm mới ngay")
+            </button>
             <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
         </div>
     </form>
@@ -70,4 +86,24 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function () {
+            // Xử lý sự kiện thay đổi tệp trên input #uploadImage
+            $('#uploadImage').change(function (e) {
+                const file = e.target.files[0]; // Lấy tệp đầu tiên được chọn
+
+                if (file) {
+                    const reader = new FileReader();
+
+                    // Khi FileReader đọc xong tệp, cập nhật src cho thẻ img
+                    reader.onload = function (event) {
+                        $('#imagePreview').attr('src', event.target.result);
+                    };
+
+                    reader.readAsDataURL(file); // Đọc tệp dưới dạng URL dữ liệu
+                }
+            });
+        });
+    </script>
 }

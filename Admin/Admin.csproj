@@ -15,4 +15,9 @@
     <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\MatHang\" />
+    <Folder Include="wwwroot\images\KhachHang\" />
+  </ItemGroup>
+
 </Project>

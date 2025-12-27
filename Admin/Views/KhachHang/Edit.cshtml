@@ -1,0 +1,108 @@
+﻿@model KhachHang
+@{
+    bool isEdit = Model.MaKhachHang > 0;
+    ViewData["Title"] = isEdit ? "Sửa thông tin khách" : "Thêm khách hàng";
+}
+<div class="container mt-4">
+    <h2>@(isEdit ? $"Chỉnh sửa khách hàng: Mã số {Model.MaKhachHang}" : "Thêm khách hàng mới")</h2>
+    <hr />
+    <form asp-action="@(isEdit ? "Edit" : "Create")" enctype="multipart/form-data">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input type="hidden" asp-for="MaKhachHang" />
+
+        <div class="row">
+
+            <div class="col-mb-6">
+                <div class="mb-3">
+                    <label asp-for="HoTen" class="form-label">Họ và Tên</label>
+                    <input asp-for="HoTen" class="form-control" />
+                    <span asp-validation-for="HoTen" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="DienThoai" class="form-label">Số điện thoại</label>
+                    <input asp-for="DienThoai" class="form-control" />
+                    <span asp-validation-for="DienThoai" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" type="email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="MatKhau" class="form-label">Mật Khẩu</label>
+                    <input asp-for="MatKhau" class="form-control"/>
+                    <span asp-validation-for="MatKhau" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="DiaChi" class="form-label">Địa chỉ</label>
+                    <input asp-for="DiaChi" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="MaTinh" class="form-label">Tỉnh / Thành phố</label>
+                    <select asp-for="MaTinh" class="form-select" asp-items="ViewBag.MaTinh">
+                        <option value="">-- Chọn Tỉnh/Thành --</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="VaiTro" class="form-label">Vai trò hệ thống</label>
+                    <select asp-for="VaiTro" class="form-select">
+                        <option value="user">Người dùng (User)</option>
+                        <option value="admin">Quản trị viên (Admin)</option>
+                    </select>
+                    <span asp-validation-for="VaiTro" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Chọn hình ảnh khách hàng</label>
+                    <input type="file" name="uploadImage" id="uploadImage" class="form-control" accept="image/*" />
+
+                    <input type="hidden" asp-for="HinhAnh" />
+
+                    @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                    {
+                        <div class="mt-2">
+                            <p>Ảnh hiện tại:</p>
+                            <img id="imagePreview"
+                                 src="@(string.IsNullOrEmpty(Model.HinhAnh) ? "/images/no-image.png" : "/images/KhachHang/" + Model.HinhAnh)"
+                                 width="300"
+                                 class="img-thumbnail" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">@((isEdit ? "Lưu lại" : "Thêm mới"))</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            // Xử lý sự kiện thay đổi tệp trên input #uploadImage
+            $('#uploadImage').change(function (e) {
+                const file = e.target.files[0]; // Lấy tệp đầu tiên được chọn
+
+                if (file) {
+                    const reader = new FileReader();
+
+                    // Khi FileReader đọc xong tệp, cập nhật src cho thẻ img
+                    reader.onload = function (event) {
+                        $('#imagePreview').attr('src', event.target.result);
+                    };
+
+                    reader.readAsDataURL(file); // Đọc tệp dưới dạng URL dữ liệu
+                }
+            });
+        });
+    </script>
+}

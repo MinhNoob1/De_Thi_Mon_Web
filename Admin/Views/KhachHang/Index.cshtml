@@ -1,0 +1,65 @@
+﻿@model PaginatedList<KhachHang>
+@{
+    ViewData["Title"] = "Quản lý khách hàng";
+}
+
+<h1>Khách Hàng</h1>
+
+<form asp-action="Index" method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="keyword" value="@ViewBag.SearchModel?.Keyword" class="form-control" placeholder="Tên hoặc SĐT...">
+    </div>
+    <div class="col-md-4">
+        <input type="text" name="diaChi" value="@ViewBag.SearchModel?.DiaChi" class="form-control" placeholder="Địa chỉ...">
+    </div>
+    <div class="col-md-2">
+        <a asp-action="Create" class="btn btn-success w-100">
+            <i class="bi bi-person-plus"></i> Thêm mới
+        </a>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+    </div>
+</form>
+
+<hr />
+
+<div id="data-container">
+    <partial name="List" model="Model" />
+</div>
+
+@section Scripts {
+    <script>
+        window.loadPage = function(page) {
+            let data = {
+                page: page,
+                keyword: $('input[name="keyword"]').val(),
+                diaChi: $('input[name="diaChi"]').val()
+            };
+            $.ajax({
+                url: '@Url.Action("Index", "KhachHang")',
+                type: 'GET',
+                data: data,
+                success: function(result) {
+                    $('#data-container').html(result);
+                    $('html, body').animate({ scrollTop: $("#data-container").offset().top - 100 }, 200);
+                }
+            });
+        }
+
+        $('form').submit(function(e) { e.preventDefault(); loadPage(1); });
+
+        // Hàm xóa (Tương tự MatHang)
+        window.confirmDelete = function(id, name) {
+            if (confirm(`Xóa khách hàng "${name}"?`)) {
+                $.ajax({
+                    url: '@Url.Action("Delete", "KhachHang")', type: 'POST', data: { id: id },
+                    success: function(res) {
+                        if(res.success) loadPage(1);
+                        else alert(res.message);
+                    }
+                });
+            }
+        }
+    </script>
+}

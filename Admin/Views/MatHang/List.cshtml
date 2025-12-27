@@ -19,7 +19,14 @@
             {
                 <tr>
                     <td>
-                        <img src="/images/@(item.HinhAnh ?? "no-image.png")" width="50" height="50" style="object-fit:cover" onerror="this.src='/images/no-image.png'" />
+                        @if (!string.IsNullOrEmpty(item.HinhAnh))
+                        {
+                            <img src="/images/MatHang/@item.HinhAnh" width="50" height="50" style="object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <img src="/images/no-image.png" width="50" height="50" />
+                        }
                     </td>
                     <td>@item.TenMatHang</td>
                     <td>@item.LoaiHang?.TenLoaiHang</td>
@@ -37,7 +44,9 @@
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.MaMatHang" class="btn btn-sm btn-info">Sửa</a>
-                        <a asp-action="Delete" asp-route-id="@item.MaMatHang" class="btn btn-sm btn-danger">Xóa</a>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(@item.MaMatHang, '@item.TenMatHang')">
+                            Xóa
+                        </button>
                     </td>
                 </tr>
             }

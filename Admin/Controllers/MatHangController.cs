@@ -1,5 +1,6 @@
 ﻿using Admin.Models;
-using Azure.Core;
+using Admin.Services;
+using Admin.Extensions;
 using DataAccessTool;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,49 +12,38 @@ namespace Admin.Controllers
     public class MatHangController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly MatHangService _matHangService;
+        private const string SessionKey = "MatHang_SearchState";
 
-        public MatHangController(ApplicationDbContext context)
+        public MatHangController(ApplicationDbContext context, MatHangService matHangService)
         {
             _context = context;
+            _matHangService = matHangService;
         }
 
-        // GET: MatHang (Danh sách + Tìm kiếm)
-        public async Task<IActionResult> Index(string? searchName, int? maLoai, decimal? giaMin, decimal? giaMax, int page = 1)
+        public async Task<IActionResult> Index(MatHangSearchModel search)
         {
-            int pageSize = 8; // Số sản phẩm mỗi trang
-
-            // 1. Lấy toàn bộ mặt hàng, bao gồm thông tin Loại hàng (Eager Loading)
-            var query = _context.MatHangs.Include(m => m.LoaiHang).AsQueryable();
-
-            // 2. Lọc theo tên sản phẩm
-            if (!string.IsNullOrEmpty(searchName))
+            bool isSearchAction = Request.Query.ContainsKey("searchName");
+            if (isSearchAction)
             {
-                query = query.Where(m => m.TenMatHang.Contains(searchName));
+                HttpContext.Session.SetObject(SessionKey, search);
+            }
+            else
+            {
+                var savedSearch = HttpContext.Session.GetObject<MatHangSearchModel>(SessionKey);
+                if (savedSearch != null)
+                {
+                    search = savedSearch;
+                }
             }
 
-            // 3. Lọc theo loại hàng
-            if (maLoai.HasValue)
-            {
-                query = query.Where(m => m.MaLoaiHang == maLoai);
-            }
+            // 2. Gọi Service
+            var model = await _matHangService.GetPagedListAsync(search);
 
-            // 4. Lọc theo khoảng giá
-            if (giaMin.HasValue)
-            {
-                query = query.Where(m => m.GiaBan >= giaMin);
-            }
-            if (giaMax.HasValue)
-            {
-                query = query.Where(m => m.GiaBan <= giaMax);
-            }
-            int count = await query.CountAsync();
-            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-
-            var model = new PaginatedList<MatHang>(items, count, page, pageSize);
-
+            // 3. Chuẩn bị dữ liệu hiển thị (Để điền lại vào các ô input)
+            ViewBag.SearchModel = search;
             ViewBag.LoaiHangs = await _context.LoaiHangs.ToListAsync();
 
-            // Nếu là yêu cầu AJAX (từ JavaScript), chỉ trả về phần danh sách sản phẩm
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 return PartialView("List", model);
@@ -61,42 +51,82 @@ namespace Admin.Controllers
 
             return View(model);
         }
+
+        // GET: MatHang/Create
+        public async Task<IActionResult> Create()
+        {
+            var loaiHangs = await _context.LoaiHangs.ToListAsync();
+            ViewBag.MaLoaiHang = new SelectList(loaiHangs, "MaLoaiHang", "TenLoaiHang");
+            return View("Edit", new MatHang());
+        }
+        // POST: MatHang/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(MatHang model, IFormFile? uploadImage)
+        {
+            if (ModelState.IsValid)
+            {
+                if (uploadImage != null && uploadImage.Length > 0)
+                {
+                    model.HinhAnh = await _matHangService.SaveImageAsync(uploadImage);
+                }
+                _context.Add(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.MaLoaiHang = new SelectList(await _context.LoaiHangs.ToListAsync(), "MaLoaiHang", "TenLoaiHang", model.MaLoaiHang);
+            return View("Edit", model);
+        }
         // GET: MatHang/Edit
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
-
             var matHang = await _context.MatHangs.FindAsync(id);
             if (matHang == null) return NotFound();
-
-            // Load danh mục để hiển thị trong Dropdown
-            ViewBag.MaLoaiHang = new SelectList(_context.LoaiHangs, "MaLoaiHang", "TenLoaiHang", matHang.MaLoaiHang);
+            ViewBag.MaLoaiHang = new SelectList(await _context.LoaiHangs.ToListAsync(), "MaLoaiHang", "TenLoaiHang", matHang.MaLoaiHang);
             return View(matHang);
         }
-
         // POST: MatHang/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MaMatHang,TenMatHang,MaLoaiHang,GiaBan,DonViTinh,HinhAnh,MoTa,SoLuong,DangBan")] MatHang matHang)
+        public async Task<IActionResult> Edit(int id, MatHang matHang, IFormFile? uploadImage)
         {
             if (id != matHang.MaMatHang) return NotFound();
 
             if (ModelState.IsValid)
             {
-                try
+                if (uploadImage != null && uploadImage.Length > 0)
                 {
-                    _context.Update(matHang);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    matHang.HinhAnh = await _matHangService.SaveImageAsync(uploadImage);
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.MatHangs.Any(e => e.MaMatHang == matHang.MaMatHang)) return NotFound();
-                    else throw;
-                }
+                _context.Update(matHang);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            ViewBag.MaLoaiHang = new SelectList(_context.LoaiHangs, "MaLoaiHang", "TenLoaiHang", matHang.MaLoaiHang);
+            ViewBag.MaLoaiHang = new SelectList(await _context.LoaiHangs.ToListAsync(), "MaLoaiHang", "TenLoaiHang", matHang.MaLoaiHang);
             return View(matHang);
+        }
+        // DELETE: MatHang/Delete
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var matHang = await _context.MatHangs.FindAsync(id);
+            if (matHang == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy mặt hàng!" });
+            }
+
+            try
+            {
+                _context.MatHangs.Remove(matHang);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi khi xóa: " + ex.Message });
+            }
         }
     }
 }

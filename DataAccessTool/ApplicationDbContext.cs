@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Models;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 
 namespace DataAccessTool
 {
@@ -21,6 +19,7 @@ namespace DataAccessTool
         public DbSet<DonHangChiTiet> DonHangChiTiets { get; set; }
         public DbSet<GioHang> GioHangs { get; set; }
         public DbSet<GioHangChiTiet> GioHangChiTiets { get; set; }
+        public DbSet<TinhThanh> TinhThanhs { get; set; }
         #endregion
 
         /// <summary>
