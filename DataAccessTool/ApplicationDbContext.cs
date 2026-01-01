@@ -76,6 +76,7 @@ namespace DataAccessTool
             modelBuilder.Entity<DonHang>().ToTable("DonHang");
             modelBuilder.Entity<GioHang>().ToTable("GioHang");
             modelBuilder.Entity<GioHangChiTiet>().ToTable("GioHangChiTiet");
+            modelBuilder.Entity<TinhThanh>().ToTable("TinhThanh");
         }
     }
 }

@@ -36,5 +36,10 @@ namespace Models
         public virtual TrangThaiDon? TrangThaiDon { get; set; }
 
         public virtual ICollection<DonHangChiTiet> DonHangChiTiets { get; set; } = new List<DonHangChiTiet>();
+
+        public int? MaTinh { get; set; }
+
+        [ForeignKey("MaTinh")]
+        public virtual TinhThanh? TinhThanh { get; set; }
     }
 }

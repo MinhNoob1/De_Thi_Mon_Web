@@ -37,5 +37,6 @@ namespace Models
 
         [StringLength(5)]
         public string? VaiTro { get; set; }
+        public bool DangHoatDong { get; set; } = true;
     }
 }
