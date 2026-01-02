@@ -9,7 +9,7 @@ namespace Admin.Services
     public class LoaiHangService
     {
         private readonly ApplicationDbContext _context;
-        private const int PageSize = 20; // Loại hàng thường ít, hiện nhiều hơn chút
+        private const int PageSize = 20;
 
         public LoaiHangService(ApplicationDbContext context)
         {

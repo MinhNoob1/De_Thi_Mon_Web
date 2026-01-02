@@ -1,4 +1,5 @@
-﻿using Admin.Models;
+﻿using Admin.Extensions;
+using Admin.Models;
 using Admin.Services;
 using DataAccessTool;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,7 @@ namespace Admin.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly TinhThanhService _service;
+        private const string SessionKey = "TinhThanh_SearchState";
 
         public TinhThanhController(ApplicationDbContext context, TinhThanhService service)
         {
@@ -22,6 +24,21 @@ namespace Admin.Controllers
 
         public async Task<IActionResult> Index(TinhThanhSearchModel search)
         {
+            // Kiểm tra xem người dùng có đang thực hiện tìm kiếm hoặc chuyển trang không
+            bool isSearchAction = Request.Query.ContainsKey("keyword") || Request.Query.ContainsKey("page");
+
+            if (isSearchAction)
+            {
+                // Lưu trạng thái tìm kiếm vào Session
+                HttpContext.Session.SetObject(SessionKey, search);
+            }
+            else
+            {
+                // Khôi phục trạng thái cũ từ Session khi quay lại trang
+                var savedSearch = HttpContext.Session.GetObject<TinhThanhSearchModel>(SessionKey);
+                if (savedSearch != null) search = savedSearch;
+            }
+
             var model = await _service.GetPagedListAsync(search);
             ViewBag.SearchModel = search;
 
@@ -30,15 +47,42 @@ namespace Admin.Controllers
 
             return View(model);
         }
-
-        public async Task<IActionResult> Edit(int id = 0)
+        // GET: TinhThanh/Create
+        public IActionResult Create()
         {
-            if (id == 0) return View(new TinhThanh()); // Tạo mới
+            return View("Edit", new TinhThanh());
+        }
+
+        // POST: TinhThanh/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(TinhThanh model)
+        {
+            if (ModelState.IsValid)
+            {
+                bool exists = await _context.TinhThanhs.AnyAsync(x => x.MaTinh == model.MaTinh);
+                if (exists)
+                {
+                    ModelState.AddModelError("MaTinh", "Mã tỉnh này đã tồn tại, vui lòng nhập mã khác.");
+                    return View("Edit", model);
+                }
+
+                _context.Add(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View("Edit", model);
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            // Nếu không có ID thì báo lỗi
+            if (id == 0) return NotFound();
 
             var item = await _context.TinhThanhs.FindAsync(id);
             if (item == null) return NotFound();
 
-            return View(item); // Sửa
+            return View(item);
         }
 
         [HttpPost]

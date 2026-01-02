@@ -1,4 +1,5 @@
-﻿using Admin.Models;
+﻿using Admin.Extensions;
+using Admin.Models;
 using Admin.Services;
 using DataAccessTool;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,7 @@ namespace Admin.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly TrangThaiDonService _service;
+        private const string SessionKey = "TrangThaiDon_SearchState";
 
         public TrangThaiDonController(ApplicationDbContext context, TrangThaiDonService service)
         {
@@ -22,6 +24,18 @@ namespace Admin.Controllers
 
         public async Task<IActionResult> Index(TrangThaiDonSearchModel search)
         {
+            bool isSearchAction = Request.Query.ContainsKey("keyword") || Request.Query.ContainsKey("page");
+
+            if (isSearchAction)
+            {
+                HttpContext.Session.SetObject(SessionKey, search);
+            }
+            else
+            {
+                var savedSearch = HttpContext.Session.GetObject<TrangThaiDonSearchModel>(SessionKey);
+                if (savedSearch != null) search = savedSearch;
+            }
+
             var model = await _service.GetPagedListAsync(search);
             ViewBag.SearchModel = search;
 

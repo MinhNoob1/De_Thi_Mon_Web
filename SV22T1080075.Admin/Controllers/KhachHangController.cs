@@ -9,7 +9,7 @@ using Models;
 
 namespace Admin.Controllers
 {
-    public class KhachHangController : Microsoft.AspNetCore.Mvc.Controller
+    public class KhachHangController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly KhachHangService _khachHangService;

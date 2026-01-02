@@ -32,11 +32,26 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-2 text-uppercase fw-bold text-secondary border" style="width: 35px; height: 35px;">
-                                    @(item.KhachHang?.HoTen?.Substring(0, 1) ?? "?")
+                                <div class="me-2">
+                                    @if (!string.IsNullOrEmpty(item.KhachHang?.HinhAnh))
+                                    {
+                                        <img src="~/images/KhachHang/@item.KhachHang.HinhAnh"
+                                             alt="@item.KhachHang.HoTen"
+                                             class="rounded-circle object-fit-cover border"
+                                             style="width: 40px; height: 40px;"
+                                             onerror="this.src='/images/no-image.png'" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center border text-primary fw-bold"
+                                             style="width: 40px; height: 40px;">
+                                            @(item.KhachHang?.HoTen?.Substring(0, 1) ?? "?")
+                                        </div>
+                                    }
                                 </div>
+
                                 <div>
-                                    <div class="fw-medium">@item.KhachHang?.HoTen</div>
+                                    <div class="fw-bold text-dark">@item.KhachHang?.HoTen</div>
                                     <div class="small text-muted">@item.KhachHang?.DienThoai</div>
                                 </div>
                             </div>

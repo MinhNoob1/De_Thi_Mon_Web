@@ -20,13 +20,17 @@ namespace Admin.Controllers
         public async Task<IActionResult> Index()
         {
             // 1. Lấy số liệu thống kê
+            var tongDoanhThu = await _context.DonHangs
+                .Include(d => d.TrangThaiDon) // Cần include để check tên trạng thái
+                .Where(d => d.TrangThaiDon != null && d.TrangThaiDon.MaTrangThai != 5)
+                .SumAsync(d => d.TongTien);
+
             var viewModel = new DashboardViewModel
             {
                 TongDonHang = await _context.DonHangs.CountAsync(),
                 TongSanPham = await _context.MatHangs.CountAsync(),
                 TongKhachHang = await _context.KhachHangs.CountAsync(),
-                // Tính tổng tiền các đơn hàng (Chỉ tính đơn đã hoàn thành/không bị hủy nếu cần logic chặt chẽ hơn)
-                DoanhThu = await _context.DonHangs.SumAsync(d => d.TongTien) ?? 0
+                DoanhThu = tongDoanhThu ?? 0
             };
 
             // 2. Lấy 5 đơn hàng mới nhất

@@ -131,23 +131,52 @@
                     {
                         foreach (var item in Model.DonHangMoiNhat)
                         {
+                            // Áp dụng logic switch từ TrangThaiDon dựa trên MaTrangThai của đơn hàng
+                            string badgeClass = item.MaTrangThai switch
+                            {
+                                1 => "bg-secondary",   // Mới
+                                2 => "bg-info",        // Đã duyệt
+                                3 => "bg-warning",     // Đang giao
+                                4 => "bg-success",     // Hoàn tất
+                                5 => "bg-danger",      // Đã hủy
+                                _ => "bg-light text-dark border" // Trạng thái khác
+                            };
+
                             <tr>
                                 <td class="ps-4 fw-bold">#@item.MaDonHang</td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar-initial rounded bg-light text-primary fw-bold p-2 me-2">
-                                            @item.KhachHang?.HoTen.Substring(0, 1)
+                                        <div class="me-2">
+                                            @if (!string.IsNullOrEmpty(item.KhachHang?.HinhAnh))
+                                            {
+                                                <img src="~/images/KhachHang/@item.KhachHang.HinhAnh"
+                                                     alt="@item.KhachHang.HoTen"
+                                                     class="rounded-circle object-fit-cover border"
+                                                     style="width: 40px; height: 40px;"
+                                                     onerror="this.src='/images/no-image.png'" />
+                                            }
+                                            else
+                                            {
+                                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center border text-primary fw-bold"
+                                                     style="width: 40px; height: 40px;">
+                                                    @(item.KhachHang?.HoTen?.Substring(0, 1) ?? "?")
+                                                </div>
+                                            }
                                         </div>
+
                                         <div>
-                                            <h6 class="mb-0 text-sm">@item.KhachHang?.HoTen</h6>
-                                            <small class="text-muted">@item.KhachHang?.DienThoai</small>
+                                            <div class="fw-bold text-dark">@item.KhachHang?.HoTen</div>
+                                            <div class="small text-muted">@item.KhachHang?.DienThoai</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>@item.NgayDat?.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td class="fw-bold">@item.TongTien?.ToString("N0") ₫</td>
                                 <td>
-                                    <span class="badge bg-warning text-dark">@item.TrangThaiDon?.TenTrangThai</span>
+                                    @* Sử dụng badgeClass vừa tính toán và style bo tròn từ mẫu bạn cung cấp *@
+                                    <span class="badge @badgeClass px-3 py-2 rounded-pill">
+                                        @item.TrangThaiDon?.TenTrangThai
+                                    </span>
                                 </td>
                                 <td class="text-end pe-4">
                                     <a href="/DonHang/Details/@item.MaDonHang" class="btn btn-sm btn-light">

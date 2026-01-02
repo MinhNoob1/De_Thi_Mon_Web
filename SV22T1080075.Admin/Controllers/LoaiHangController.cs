@@ -1,4 +1,5 @@
-﻿using Admin.Models;
+﻿using Admin.Extensions;
+using Admin.Models;
 using Admin.Services;
 using DataAccessTool;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,7 @@ namespace Admin.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly LoaiHangService _service;
+        private const string SessionKey = "LoaiHang_SearchState";
 
         public LoaiHangController(ApplicationDbContext context, LoaiHangService service)
         {
@@ -21,6 +23,18 @@ namespace Admin.Controllers
 
         public async Task<IActionResult> Index(LoaiHangSearchModel search)
         {
+            bool isSearchAction = Request.Query.ContainsKey("keyword") || Request.Query.ContainsKey("page");
+
+            if (isSearchAction)
+            {
+                HttpContext.Session.SetObject(SessionKey, search);
+            }
+            else
+            {
+                var savedSearch = HttpContext.Session.GetObject<LoaiHangSearchModel>(SessionKey);
+                if (savedSearch != null) search = savedSearch;
+            }
+
             var model = await _service.GetPagedListAsync(search);
             ViewBag.SearchModel = search;
 
@@ -29,29 +43,45 @@ namespace Admin.Controllers
 
             return View(model);
         }
-
-        // GET: Create / Edit
-        public async Task<IActionResult> Edit(int id = 0)
+        // GET: LoaiHang/Create
+        public IActionResult Create()
         {
-            if (id == 0) return View(new LoaiHang()); // Tạo mới
+            return View("Edit", new LoaiHang());
+        }
+
+        // POST: LoaiHang/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(LoaiHang model)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View("Edit", model);
+        }
+        // GET: LoaiHang/Edit
+        public async Task<IActionResult> Edit(int id)
+        {
+            // Nếu id = 0 thì trả về lỗi (vì đã có trang Create riêng)
+            if (id == 0) return NotFound();
 
             var item = await _context.LoaiHangs.FindAsync(id);
             if (item == null) return NotFound();
 
-            return View(item); // Sửa
+            return View(item);
         }
-        // POST: Create / Edit
+
+        // POST: LoaiHang/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(LoaiHang model)
         {
             if (ModelState.IsValid)
             {
-                if (model.MaLoaiHang == 0)
-                    _context.Add(model);
-                else
-                    _context.Update(model);
-
+                _context.Update(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

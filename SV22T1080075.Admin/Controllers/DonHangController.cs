@@ -15,8 +15,6 @@ namespace Admin.Controllers
     {
         private readonly DonHangService _service;
         private readonly ApplicationDbContext _context;
-
-        // Khóa Session duy nhất cho trang Đơn hàng
         private const string SessionKey = "DonHang_SearchState";
 
         public DonHangController(DonHangService service, ApplicationDbContext context)
