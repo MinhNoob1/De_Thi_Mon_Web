@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+text-red {
+    --bs-text-opacity: 1;
+    color: #ff0000 !important;
+}

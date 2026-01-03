@@ -159,8 +159,13 @@
                         <span class="fs-3 fw-bold text-warning">@Model.TongTien?.ToString("N0") ₫</span>
                     </div>
 
-                    @if (currentStatus == 1)
+                    @* Kiểm tra nếu đơn hàng chưa thành công và chưa hủy thì cho phép nút Hủy xuất hiện *@
+                    @if (currentStatus != 4 && currentStatus != 5)
                     {
+                        @if (currentStatus == 3)
+                        {
+                            <p class="text-danger small mt-1 text-center">* Đơn hàng đang được giao, việc hủy có thể phát sinh phí vận chuyển.</p>
+                        }
                         <form asp-controller="Order" asp-action="Cancel" asp-route-id="@Model.MaDonHang" method="post"
                               onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không?');">
                             <button type="submit" class="btn btn-outline-danger w-100 py-3 fw-bold">
@@ -168,10 +173,12 @@
                             </button>
                         </form>
                     }
-                    else if (currentStatus == 4 || currentStatus == 5)
+
+                    @* Nút mua lại dành cho đơn đã xong hoặc đã hủy *@
+                    @if (currentStatus == 4 || currentStatus == 5)
                     {
-                        <button class="btn btn-warning w-100 py-3 fw-bold text-dark">
-                            MUA LẠI ĐƠN HÀNG
+                        <button class="btn btn-warning w-100 py-3 fw-bold text-dark mb-2">
+                            <i class="bi bi-cart-plus"></i> MUA LẠI ĐƠN HÀNG
                         </button>
                     }
 

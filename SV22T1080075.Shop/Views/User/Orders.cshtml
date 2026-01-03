@@ -14,11 +14,21 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h4 class="mb-0">Đơn hàng của tôi</h4>
-                        <div class="btn-group">
-                            <a href="~/User/Orders" class="btn btn-outline-secondary btn-sm">Tất cả</a>
-                            <a href="~/User/Orders?status=1" class="btn btn-outline-secondary btn-sm">Mới</a>
-                            <a href="~/User/Orders?status=3" class="btn btn-outline-secondary btn-sm">Đang giao</a>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Lọc đơn hàng
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="~/User/Orders">Tất cả</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="~/User/Orders?status=1">Mới</a></li>
+                                <li><a class="dropdown-item" href="~/User/Orders?status=2">Xác nhận</a></li>
+                                <li><a class="dropdown-item" href="~/User/Orders?status=3">Đang giao</a></li>
+                                <li><a class="dropdown-item" href="~/User/Orders?status=4">Hoàn tất</a></li>
+                                <li><a class="dropdown-item" href="~/User/Orders?status=5">Đã hủy</a></li>
+                            </ul>
                         </div>
+
                     </div>
 
                     @if (Model != null && Model.Any())
@@ -43,27 +53,32 @@
                                             <td>
                                                 @if (item.MaTrangThai == 1)
                                                 {
-                                                    <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                                    <span class="badge bg-warning text-dark">Đơn hàng mới</span>
+                                                }
+                                                else if (item.MaTrangThai == 2)
+                                                {
+
+                                                    <span class="badge bg-gradient text-dark">Đã xác nhận</span>
                                                 }
                                                 else if (item.MaTrangThai == 3)
                                                 {
 
-                                                    <span class="badge bg-info">Đang giao</span>
+                                                    <span class="badge bg-info text-dark">Đang giao</span>
                                                 }
                                                 else if (item.MaTrangThai == 4)
                                                 {
 
-                                                    <span class="badge bg-success">Hoàn thành</span>
+                                                    <span class="badge bg-success text-dark">Hoàn thành</span>
                                                 }
                                                 else if (item.MaTrangThai == 5)
                                                 {
 
-                                                    <span class="badge bg-danger">Đã hủy</span>
+                                                    <span class="badge bg-danger text-white">Đã hủy</span>
                                                 }
                                                 else
                                                 {
 
-                                                    <span class="badge bg-secondary">@item.TrangThaiDon?.TenTrangThai</span>
+                                                    <span class="badge bg-secondary text-dark">@item.TrangThaiDon?.TenTrangThai</span>
                                                 }
                                             </td>
                                             <td class="text-primary fw-bold">@item.TongTien?.ToString("N0") ₫</td>

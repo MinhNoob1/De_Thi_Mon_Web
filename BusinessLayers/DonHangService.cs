@@ -103,7 +103,7 @@ namespace BusinessLayers
 
                 case 4: // Giao thành công
                     donHang.NgayDen = currentTime;
-                    if (donHang.NgayDi == null) donHang.NgayDi = currentTime; // Logic phụ
+                    if (donHang.NgayDi == null) donHang.NgayDi = currentTime;
                     break;
 
                 case 5: // Đã hủy
@@ -333,22 +333,24 @@ namespace BusinessLayers
         /// </summary>
         public async Task<bool> CancelOrderAsync(int maDonHang, int maKhachHang)
         {
-            // Chỉ tìm đơn hàng của đúng khách đó và đang ở trạng thái 1 (Mới)
+            // Tìm đơn hàng của đúng khách hàng đó
             var donHang = await _context.DonHangs
                 .Include(d => d.DonHangChiTiets)
                 .FirstOrDefaultAsync(d => d.MaDonHang == maDonHang && d.MaKhachHang == maKhachHang);
 
-            if (donHang == null || donHang.MaTrangThai != 1) return false;
+            // Logic mới: Chỉ không cho hủy nếu đơn đã Thành công (4) hoặc đã Hủy (5) rồi
+            if (donHang == null || donHang.MaTrangThai == 4 || donHang.MaTrangThai == 5)
+                return false;
 
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    // 1. Đổi trạng thái sang 5 (Đã hủy)
+                    // 1. Cập nhật trạng thái thành 5 (Đã hủy)
                     donHang.MaTrangThai = 5;
                     donHang.NgayHuy = DateTime.Now;
 
-                    // 2. Hoàn trả tồn kho cho từng mặt hàng
+                    // 2. HOÀN TRẢ KHO: Cộng lại số lượng vào bảng MatHang
                     if (donHang.DonHangChiTiets != null)
                     {
                         foreach (var item in donHang.DonHangChiTiets)
@@ -356,7 +358,7 @@ namespace BusinessLayers
                             var matHang = await _context.MatHangs.FindAsync(item.MaMatHang);
                             if (matHang != null)
                             {
-                                matHang.SoLuong += item.SoLuong; // Cộng lại kho
+                                matHang.SoLuong += item.SoLuong; // Cộng trả lại kho
                             }
                         }
                     }

@@ -1,8 +1,7 @@
 ﻿using BusinessLayers;
-using DataAccessTool;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims; // Cần thiết cho ClaimTypes
+using System.Security.Claims; 
 
 namespace SV22T1080075.Shop.Controllers
 {
@@ -64,6 +63,5 @@ namespace SV22T1080075.Shop.Controllers
             return RedirectToAction("Index");
         }
 
-        // Đã xóa Checkout và ConfirmOrder vì đã chuyển sang OrderController
     }
 }

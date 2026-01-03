@@ -25,7 +25,7 @@
     @await Html.PartialAsync("_SearchOffcanvas")
 
     @* Header dùng chung *@
-    @await Html.PartialAsync("_Header")
+    @await Component.InvokeAsync("Header")
 
     <main role="main">
         @RenderBody()

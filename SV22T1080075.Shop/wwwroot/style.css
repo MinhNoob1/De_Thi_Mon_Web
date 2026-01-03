@@ -120,40 +120,32 @@ CSS STRUCTURE:
 }
 
 body {
-  --bs-link-color: #333;
-  --bs-link-hover-color:#333;
-
-  --bs-link-color-rgb: 40,40,40;
-  --bs-link-hover-color-rgb: 0,0,0;
-
-  /* --bs-link-color: #FFC43F;
+    --bs-link-color: #333;
+    --bs-link-hover-color: #333;
+    --bs-link-color-rgb: 40,40,40;
+    --bs-link-hover-color-rgb: 0,0,0;
+    /* --bs-link-color: #FFC43F;
   --bs-link-hover-color: #FFC43F; */
 
-  --bs-light-rgb: 248, 248, 248;
-
-  --bs-font-sans-serif: "Open Sans", sans-serif;
-  --bs-body-font-family: var(--bs-font-sans-serif);
-  --bs-body-font-size: 1rem;
-  --bs-body-font-weight: 400;
-  --bs-body-line-height: 2;
-  --bs-body-color: #747474;
-
-  --bs-primary: #FFC43F;
-  --bs-primary-rgb: 255, 196, 63;
-
-  --bs-success: #a3be4c;
-  --bs-success-rgb: 163, 190, 76;
-  
-  --bs-primary-bg-subtle: #FFF9EB;
-  --bs-success-bg-subtle: #eef5e5;
-  
-  --bs-border-color: #F7F7F7;
-
-  --bs-secondary-rgb: 230, 243, 251;
-  /* --bs-success-rgb: 238, 245, 228; */
-  --bs-danger-rgb: 249, 235, 231;
-  --bs-warning-rgb: 255, 249, 235;
-  --bs-info-rgb: 230, 243, 250;
+    --bs-light-rgb: 248, 248, 248;
+    --bs-font-sans-serif: "Open Sans", sans-serif;
+    --bs-body-font-family: var(--bs-font-sans-serif);
+    --bs-body-font-size: 1rem;
+    --bs-body-font-weight: 400;
+    --bs-body-line-height: 2;
+    --bs-body-color: #747474;
+    --bs-primary: #FFC43F;
+    --bs-primary-rgb: 255, 196, 63;
+    --bs-success: #a3be4c;
+    --bs-success-rgb: 163, 190, 76;
+    --bs-primary-bg-subtle: #FFF9EB;
+    --bs-success-bg-subtle: #eef5e5;
+    --bs-border-color: #F7F7F7;
+    --bs-secondary-rgb: 230, 243, 251;
+    /* --bs-success-rgb: 238, 245, 228; */
+    --bs-danger-rgb: 220, 53, 69;
+    --bs-warning-rgb: 255, 193, 7;
+    --bs-info-rgb: 230, 243, 250;
 }
 .btn-primary {
   --bs-btn-color: #fff;
@@ -204,20 +196,20 @@ body {
   --bs-gradient: none;
 }
 .btn-warning {
-  --bs-btn-color: #747474;
-  --bs-btn-bg: #FCF7EB;
-  --bs-btn-border-color: #FCF7EB;
-  --bs-btn-hover-color: #747474;
-  --bs-btn-hover-bg: #FFECBE;
-  --bs-btn-hover-border-color: #FFECBE;
-  --bs-btn-focus-shadow-rgb: 217,164,6;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #FFECBE;
-  --bs-btn-active-border-color: #FFECBE;
-  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #000;
-  --bs-btn-disabled-bg: #FCF7EB;
-  --bs-btn-disabled-border-color: #FCF7EB;
+    --bs-btn-color: #000; 
+    --bs-btn-bg: #ffc107; 
+    --bs-btn-border-color: #ffc107;
+    --bs-btn-hover-color: #000;
+    --bs-btn-hover-bg: #ffca2c; 
+    --bs-btn-hover-border-color: #ffc720;
+    --bs-btn-focus-shadow-rgb: 217,164,6;
+    --bs-btn-active-color: #000;
+    --bs-btn-active-bg: #ffcd39;
+    --bs-btn-active-border-color: #ffc720;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #000;
+    --bs-btn-disabled-bg: #ffc107;
+    --bs-btn-disabled-border-color: #ffc107;
 }
 .btn-success {
   --bs-btn-color: #222;
@@ -236,20 +228,20 @@ body {
   --bs-btn-disabled-border-color: #EEF5E4;
 }
 .btn-danger {
-  --bs-btn-color: #222;
-  --bs-btn-bg: #FFEADA;
-  --bs-btn-border-color: #FFEADA;
-  --bs-btn-hover-color: #222;
-  --bs-btn-hover-bg: #ecc9af;
-  --bs-btn-hover-border-color: #ecc9af;
-  --bs-btn-focus-shadow-rgb: 60,153,110;
-  --bs-btn-active-color: #222;
-  --bs-btn-active-bg: #ecc9af;
-  --bs-btn-active-border-color: #ecc9af;
-  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #222;
-  --bs-btn-disabled-bg: #FFEADA;
-  --bs-btn-disabled-border-color: #FFEADA;
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #dc3545;
+    --bs-btn-border-color: #dc3545;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #bb2d3b;
+    --bs-btn-hover-border-color: #b02a37;
+    --bs-btn-focus-shadow-rgb: 225,83,97;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #b02a37;
+    --bs-btn-active-border-color: #a52834;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #dc3545;
+    --bs-btn-disabled-border-color: #dc3545;
 }
 body {
   letter-spacing: 0.03em;

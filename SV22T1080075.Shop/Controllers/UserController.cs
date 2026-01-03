@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using System.Security.Claims;
 
@@ -126,6 +127,7 @@ namespace SV22T1080075.Shop.Controllers
             int userId = GetUserId();
             var user = await _context.KhachHangs.FindAsync(userId);
             if (user == null) return RedirectToAction("Logout");
+            ViewBag.ListTinhThanh = await _context.TinhThanhs.OrderBy(t => t.TenTinh).ToListAsync();
 
             return View(user);
         }
@@ -133,38 +135,49 @@ namespace SV22T1080075.Shop.Controllers
         [HttpPost]
         public async Task<IActionResult> Profile(KhachHang model, IFormFile? uploadPhoto)
         {
-            int userId = GetUserId();
-            // Lấy dữ liệu gốc từ DB để đảm bảo an toàn (không bị sửa Email/Pass lung tung)
-            var userInDb = await _context.KhachHangs.FindAsync(userId);
-            if (userInDb == null) return RedirectToAction("Logout");
+            int userId = GetUserId(); 
 
-            // Chỉ cập nhật các trường cho phép
-            userInDb.HoTen = model.HoTen;
-            userInDb.DienThoai = model.DienThoai;
+            // Lấy dữ liệu gốc từ DB để đảm bảo an toàn
+            var userInDb = await _context.KhachHangs.FindAsync(userId); 
+            if (userInDb == null) return RedirectToAction("Logout"); 
+
+            // Cập nhật thông tin cơ bản
+            userInDb.HoTen = model.HoTen; 
+            userInDb.DienThoai = model.DienThoai; 
             userInDb.DiaChi = model.DiaChi;
+            userInDb.MaTinh = model.MaTinh;
 
-            // Xử lý upload ảnh
+            // --- XỬ LÝ UPLOAD ẢNH SANG PROJECT ADMIN ---
             if (uploadPhoto != null && uploadPhoto.Length > 0)
             {
-                string fileName = $"{DateTime.Now.Ticks}_{uploadPhoto.FileName}";
-                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/KhachHang");
+                string fileName = $"{DateTime.Now.Ticks}_{uploadPhoto.FileName}"; 
 
-                if (!Directory.Exists(folderPath)) Directory.CreateDirectory(folderPath);
+                // 1. Xác định đường dẫn tuyệt đối đến thư mục images/KhachHang của project Admin
+                string adminRootPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "SV22T1080075.Admin", "wwwroot");
+                string folderPath = Path.Combine(adminRootPath, "images", "KhachHang");
 
-                string filePath = Path.Combine(folderPath, fileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                // 2. Tạo thư mục nếu chưa tồn tại trong Admin
+                if (!Directory.Exists(folderPath))
                 {
-                    await uploadPhoto.CopyToAsync(stream);
+                    Directory.CreateDirectory(folderPath); 
                 }
 
-                userInDb.HinhAnh = $"/images/KhachHang/{fileName}";
+                // 3. Lưu file vật lý vào Admin
+                string filePath = Path.Combine(folderPath, fileName); 
+                using (var stream = new FileStream(filePath, FileMode.Create)) 
+                {
+                    await uploadPhoto.CopyToAsync(stream); 
+                }
+
+                // 4. Lưu đường dẫn tương đối vào Database
+                userInDb.HinhAnh = $"/images/KhachHang/{fileName}"; 
             }
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); 
             TempData["Success"] = "Cập nhật hồ sơ thành công!";
+            ViewBag.ListTinhThanh = await _context.TinhThanhs.OrderBy(t => t.TenTinh).ToListAsync();
 
-            // Trả về View với dữ liệu mới nhất
-            return View(userInDb);
+            return View(userInDb); 
         }
 
         // 6. ĐỔI MẬT KHẨU
