@@ -1,13 +1,13 @@
-﻿using Admin.Extensions;
-using Admin.Models;
-using Admin.Services;
+﻿using BusinessLayers;
+using BusinessLayers.Shared;
 using DataAccessTool;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Models.SearchView;
 
-namespace Admin.Controllers
+namespace SV22T1080075.Admin.Controllers
 {
     public class KhachHangController : Controller
     {
@@ -127,5 +127,6 @@ namespace Admin.Controllers
             await _context.SaveChangesAsync();
             return Json(new { success = true });
         }
+
     }
 }

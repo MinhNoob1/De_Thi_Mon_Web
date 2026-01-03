@@ -1,42 +1,94 @@
-﻿@{
-    ViewBag.Title = "Lịch sử đơn hàng";
+﻿@model List<Models.DonHang>
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
 }
 
-    <div class="card border-0 shadow-sm rounded-4 p-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="mb-0">Lịch sử đơn hàng</h3>
-            <select class="form-select border-0 bg-light w-auto">
-                <option>Tất cả đơn hàng</option>
-                <option>Hoàn thành</option>
-                <option>Đang giao</option>
-            </select>
-        </div>
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <partial name="_UserSidebar" />
+            </div>
 
-        <div class="table-responsive">
-            <table class="table align-middle">
-                <thead class="text-uppercase bg-light">
-                    <tr>
-                        <th class="py-3 border-0">Mã đơn</th>
-                        <th class="py-3 border-0">Ngày đặt</th>
-                        <th class="py-3 border-0">Trạng thái</th>
-                        <th class="py-3 border-0">Tổng</th>
-                        <th class="py-3 border-0"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="py-4 fw-bold">#FD-2025-001</td>
-                        <td class="py-4 text-muted">22/12/2025</td>
-                        <td class="py-4">
-                            <span class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill">Hoàn thành</span>
-                        </td>
-                        <td class="py-4 fw-bold">$125.00</td>
-                        <td class="py-4 text-end">
-                            <button class="btn btn-outline-dark btn-sm rounded-2">Chi tiết</button>
-                        </td>
-                    </tr>
-                    @* Có thể thêm các dòng đơn hàng khác ở đây *@
-                </tbody>
-            </table>
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Đơn hàng của tôi</h4>
+                        <div class="btn-group">
+                            <a href="~/User/Orders" class="btn btn-outline-secondary btn-sm">Tất cả</a>
+                            <a href="~/User/Orders?status=1" class="btn btn-outline-secondary btn-sm">Mới</a>
+                            <a href="~/User/Orders?status=3" class="btn btn-outline-secondary btn-sm">Đang giao</a>
+                        </div>
+                    </div>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Trạng thái</th>
+                                        <th>Tổng tiền</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td class="fw-bold">#@item.MaDonHang</td>
+                                            <td>@item.NgayDat?.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                @if (item.MaTrangThai == 1)
+                                                {
+                                                    <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                                }
+                                                else if (item.MaTrangThai == 3)
+                                                {
+
+                                                    <span class="badge bg-info">Đang giao</span>
+                                                }
+                                                else if (item.MaTrangThai == 4)
+                                                {
+
+                                                    <span class="badge bg-success">Hoàn thành</span>
+                                                }
+                                                else if (item.MaTrangThai == 5)
+                                                {
+
+                                                    <span class="badge bg-danger">Đã hủy</span>
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="badge bg-secondary">@item.TrangThaiDon?.TenTrangThai</span>
+                                                }
+                                            </td>
+                                            <td class="text-primary fw-bold">@item.TongTien?.ToString("N0") ₫</td>
+                                            <td class="text-end">
+                                                <a asp-controller="Order" asp-action="Detail" asp-route-id="@item.MaDonHang"
+                                                   class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                                    Chi tiết
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p>Bạn chưa có đơn hàng nào.</p>
+                            <a href="~/" class="btn btn-primary btn-sm">Mua sắm ngay</a>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
+</section>

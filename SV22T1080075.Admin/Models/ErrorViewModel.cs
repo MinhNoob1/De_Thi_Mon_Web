@@ -1,4 +1,4 @@
-namespace Admin.Models
+namespace SV22T1080075.Admin.Models
 {
     public class ErrorViewModel
     {

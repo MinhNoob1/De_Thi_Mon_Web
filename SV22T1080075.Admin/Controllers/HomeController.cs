@@ -1,11 +1,12 @@
-﻿using Admin.Models;
-using DataAccessTool;
+﻿using DataAccessTool;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Models.SearchView;
+using SV22T1080075.Admin.Models;
 using System.Diagnostics;
 
-namespace Admin.Controllers
+namespace SV22T1080075.Admin.Controllers
 {
     [Authorize(Roles = "admin")]
     public class HomeController : Controller

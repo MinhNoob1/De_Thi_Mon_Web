@@ -1,109 +1,79 @@
-﻿@{
-    ViewData["Title"] = "Chi tiết sản phẩm";
+﻿@model MatHang
+@{
+    ViewData["Title"] = Model.TenMatHang;
 }
 
 <section class="py-5">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mt-5">
-                        <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-dark">Trang chủ</a></li>
-                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-dark">Sản phẩm</a></li>
-                        <li class="breadcrumb-item active text-primary" aria-current="page">Sunstar Fresh Melon Juice</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="card border-0 rounded-4 shadow-sm overflow-hidden">
+                    <div class="position-relative p-4 text-center">
+                        <img src="~/images/MatHang/@(string.IsNullOrEmpty(Model.HinhAnh) ? "no-image.png" : Model.HinhAnh)"
+                             class="img-fluid"
+                             style="max-height: 500px; object-fit: contain;"
+                             alt="@Model.TenMatHang">
 
-        <div class="row g-5 mt-2">
-            <div class="col-md-6">
-                <div class="product-image shadow-sm rounded-5 overflow-hidden">
-                    @* Sử dụng ảnh demo có sẵn trong thư mục images của bạn *@
-                    <img src="~/images/singel-product-item.jpg" alt="product" class="img-fluid w-100">
+                        @* Nếu có logic giảm giá/mới thì hiển thị badge *@
+                        @* <span class="badge bg-primary position-absolute top-0 start-0 m-4 px-3 py-2">Mới</span> *@
+                    </div>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="product-info">
-                    <div class="categories text-primary text-uppercase fw-bold mb-2">100% Tự nhiên</div>
-                    <h1 class="display-5 fw-bold mb-3">Sunstar Fresh Melon Juice</h1>
+            <div class="col-lg-6">
+                <div class="product-info ps-lg-4">
+                    <h2 class="display-6 fw-bold mb-3">@Model.TenMatHang</h2>
 
-                    <div class="rating d-flex align-items-center mb-3">
-                        <svg width="24" height="24" class="text-primary"><use xlink:href="#star-solid"></use></svg>
-                        <svg width="24" height="24" class="text-primary"><use xlink:href="#star-solid"></use></svg>
-                        <svg width="24" height="24" class="text-primary"><use xlink:href="#star-solid"></use></svg>
-                        <svg width="24" height="24" class="text-primary"><use xlink:href="#star-solid"></use></svg>
-                        <svg width="24" height="24" class="text-muted"><use xlink:href="#star-outline"></use></svg>
-                        <span class="ms-2 text-muted">(24 đánh giá)</span>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="display-6 fw-bold text-primary me-3">@Model.GiaBan.ToString("N0") ₫</span>
+                        <span class="text-muted">/ @Model.DonViTinh</span>
                     </div>
 
-                    <div class="price mb-4">
-                        <span class="fs-2 fw-bold text-dark">$18.00</span>
-                        <span class="text-muted text-decoration-line-through ms-2">$24.00</span>
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="text-warning me-2">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-half"></i>
+                        </div>
+                        <span class="text-muted small">(150 đánh giá)</span>
                     </div>
 
                     <p class="lead text-muted mb-4">
-                        Nước ép dưa lưới Sunstar nguyên chất 100%, không chứa chất bảo quản, mang lại hương vị tươi mát và giàu vitamin cho mùa hè năng động.
+                        @Model.MoTa
                     </p>
 
-                    <div class="cart-options d-flex flex-wrap gap-3 align-items-center mb-5">
-                        @* Bộ chọn số lượng có sẵn logic trong script.js *@
-                        <div class="input-group product-qty" style="width: 150px;">
-                            <span class="input-group-btn">
-                                <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
-                                    <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                    <form action="~/Cart/Add" method="post" class="mb-4">
+                        <input type="hidden" name="id" value="@Model.MaMatHang" />
+
+                        <div class="row g-3 align-items-center">
+                            <div class="col-auto">
+                                <label class="col-form-label fw-bold">Số lượng:</label>
+                            </div>
+                            <div class="col-auto">
+                                <div class="input-group">
+                                    <button class="btn btn-light border" type="button" onclick="decreaseQty()">-</button>
+                                    <input type="number" class="form-control text-center border-start-0 border-end-0"
+                                           id="quantity" name="quantity" value="1" min="1" style="width: 60px;">
+                                    <button class="btn btn-light border" type="button" onclick="increaseQty()">+</button>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary px-4 py-2">
+                                    <i class="bi bi-cart-plus me-2"></i> Thêm vào giỏ
                                 </button>
-                            </span>
-                            <input type="text" name="quantity" class="form-control input-number text-center" value="1">
-                            <span class="input-group-btn">
-                                <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
-                                    <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
-                                </button>
-                            </span>
+                            </div>
                         </div>
+                    </form>
 
-                        <button class="btn btn-primary btn-lg text-uppercase px-5 py-3 rounded-2">
-                            Thêm vào giỏ hàng
-                        </button>
-
-                        <a href="#" class="btn btn-outline-dark p-3 rounded-2">
-                            <svg width="24" height="24"><use xlink:href="#heart"></use></svg>
-                        </a>
-                    </div>
-
-                    <div class="product-meta border-top pt-4">
-                        <p class="mb-1"><strong>Mã sản phẩm:</strong> SKU-12345</p>
-                        <p class="mb-1"><strong>Danh mục:</strong> <a href="#" class="text-decoration-none">Nước ép</a>, <a href="#" class="text-decoration-none">Trái cây</a></p>
-                        <p class="mb-0"><strong>Thẻ:</strong> Healthy, Organic, Summer</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-5">
-            <div class="col-md-12">
-                <div class="bootstrap-tabs">
-                    <nav>
-                        <div class="nav nav-tabs border-bottom" id="nav-tab" role="tablist">
-                            <button class="nav-link text-uppercase fs-6 active" id="nav-description-tab" data-bs-toggle="tab" data-bs-target="#nav-description">Mô tả sản phẩm</button>
-                            <button class="nav-link text-uppercase fs-6" id="nav-info-tab" data-bs-toggle="tab" data-bs-target="#nav-info">Thông tin bổ sung</button>
-                            <button class="nav-link text-uppercase fs-6" id="nav-review-tab" data-bs-toggle="tab" data-bs-target="#nav-review">Đánh giá (24)</button>
-                        </div>
-                    </nav>
-                    <div class="tab-content py-4" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="nav-description" role="tabpanel">
-                            <p>Đây là nội dung mô tả chi tiết về sản phẩm. Bạn có thể chèn các thông tin về quy trình sản xuất, nguồn gốc nguyên liệu sạch 100% tự nhiên...</p>
-                        </div>
-                        <div class="tab-pane fade" id="nav-info" role="tabpanel">
-                            <table class="table table-bordered" style="max-width: 400px;">
-                                <tr><th>Trọng lượng</th><td>500ml</td></tr>
-                                <tr><th>Hạn sử dụng</th><td>12 tháng</td></tr>
-                                <tr><th>Xuất xứ</th><td>Việt Nam</td></tr>
-                            </table>
-                        </div>
-                        <div class="tab-pane fade" id="nav-review" role="tabpanel">
-                            <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+                    <div class="card bg-light border-0 rounded-3">
+                        <div class="card-body">
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Giao hàng miễn phí cho đơn từ 500k</li>
+                                <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i> Cam kết 100% thực phẩm sạch</li>
+                                <li><i class="bi bi-check-circle-fill text-success me-2"></i> Đổi trả trong 24h nếu không hài lòng</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -112,5 +82,20 @@
     </div>
 </section>
 
-@* Phần sản phẩm liên quan có thể tái sử dụng Carousel từ trang chủ *@
-@await Html.PartialAsync("_RelatedProducts")
+@section Scripts {
+    <script>
+        // Script đơn giản để tăng giảm số lượng
+        function increaseQty() {
+            var input = document.getElementById('quantity');
+            input.value = parseInt(input.value) + 1;
+        }
+
+        function decreaseQty() {
+            var input = document.getElementById('quantity');
+            var value = parseInt(input.value);
+            if (value > 1) {
+                input.value = value - 1;
+            }
+        }
+    </script>
+}

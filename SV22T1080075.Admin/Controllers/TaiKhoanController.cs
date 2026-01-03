@@ -6,7 +6,7 @@ using DataAccessTool;
 using Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Admin.Controllers
+namespace SV22T1080075.Admin.Controllers
 {
     public class TaiKhoanController : Controller
     {

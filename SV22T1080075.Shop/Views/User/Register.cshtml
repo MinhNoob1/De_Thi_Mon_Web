@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Models.KhachHang
+@{
     ViewData["Title"] = "Đăng ký tài khoản";
     Layout = "_AuthLayout";
 }
@@ -13,32 +14,39 @@
                         <p class="text-muted">Tham gia cùng FoodMart để nhận nhiều ưu đãi</p>
                     </div>
 
-                    <form>
+                    @* Hiển thị tổng hợp lỗi từ server (như trùng Email) *@
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <form asp-controller="User" asp-action="Register" method="post">
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label class="form-label fw-bold">Họ và tên</label>
-                                <input type="text" class="form-control form-control-lg bg-light border-0" placeholder="Nguyễn Văn A" required>
+                                <input type="text" asp-for="HoTen" class="form-control form-control-lg bg-light border-0" placeholder="Nguyễn Văn A" required>
+                                <span asp-validation-for="HoTen" class="text-danger small"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Địa chỉ Email</label>
-                            <input type="email" class="form-control form-control-lg bg-light border-0" placeholder="name@example.com" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Số điện thoại</label>
-                            <input type="tel" class="form-control form-control-lg bg-light border-0" placeholder="0123 456 789" required>
+                            <input type="email" asp-for="Email" class="form-control form-control-lg bg-light border-0" placeholder="name@example.com" required>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold">Mật khẩu</label>
-                                <input type="password" class="form-control form-control-lg bg-light border-0" placeholder="••••••••" required>
+                                <input type="password" asp-for="MatKhau" class="form-control form-control-lg bg-light border-0" required>
+                                <span asp-validation-for="MatKhau" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Xác nhận</label>
-                                <input type="password" class="form-control form-control-lg bg-light border-0" placeholder="••••••••" required>
+                                <label class="form-label fw-bold">Xác nhận mật khẩu</label>
+                                @* Trường này không nằm trong model KhachHang nên dùng name để khớp với tham số confirmPassword trong Controller *@
+                                <input type="password" name="confirmPassword" class="form-control form-control-lg bg-light border-0" required>
+                                @* Hiển thị lỗi cụ thể cho confirmPassword nếu có *@
+                                @if (ViewData.ModelState["confirmPassword"] != null && ViewData.ModelState["confirmPassword"]!.Errors.Any())
+                                {
+                                    <span class="text-danger small">@ViewData.ModelState["confirmPassword"]!.Errors[0].ErrorMessage</span>
+                                }
                             </div>
                         </div>
 
@@ -60,3 +68,8 @@
         </div>
     </div>
 </section>
+
+@section Scripts {
+    @* Thêm script validate phía client để tăng trải nghiệm người dùng *@
+    <partial name="_ValidationScriptsPartial" />
+}
