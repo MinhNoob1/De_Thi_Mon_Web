@@ -23,7 +23,7 @@
                             <div class="rounded-circle border d-flex align-items-center justify-content-center overflow-hidden" style="width: 48px; height: 48px; background-color: #f8f9fa;">
                                 @if (!string.IsNullOrEmpty(item.HinhAnh))
                                 {
-                                    <img src="/images/KhachHang/@item.HinhAnh" class="w-100 h-100" style="object-fit: cover;" onerror="this.src='/images/no-image.png'" />
+                                    <img src="@item.HinhAnh" class="w-100 h-100" style="object-fit: cover;" onerror="this.src='/images/no-image.png'" />
                                 }
                                 else
                                 {

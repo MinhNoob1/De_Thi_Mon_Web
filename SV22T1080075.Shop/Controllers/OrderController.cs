@@ -167,7 +167,7 @@ namespace SV22T1080075.Shop.Controllers
             return RedirectToAction("Detail", new { id = id });
         }
 
-        // GET: /Order/Success/5
+        // GET: /Order/Success
         public IActionResult Success(int id)
         {
             return View(id);

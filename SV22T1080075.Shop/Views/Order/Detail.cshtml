@@ -120,7 +120,7 @@
                                 {
                                     <tr>
                                         <td style="width: 80px;">
-                                            <img src="@item.MatHang?.HinhAnh" class="rounded-3" style="width:60px; height:60px; object-fit:cover;">
+                                            <img src="@(string.IsNullOrEmpty(item.MatHang?.HinhAnh) ? "/images/no-image.png" : $"/images/MatHang/{item.MatHang.HinhAnh}")" class="rounded-3" style="width:60px; height:60px; object-fit:cover;">
                                         </td>
                                         <td>
                                             <div class="fw-bold">@item.MatHang?.TenMatHang</div>
@@ -177,11 +177,12 @@
                     @* Nút mua lại dành cho đơn đã xong hoặc đã hủy *@
                     @if (currentStatus == 4 || currentStatus == 5)
                     {
-                        <button class="btn btn-warning w-100 py-3 fw-bold text-dark mb-2">
-                            <i class="bi bi-cart-plus"></i> MUA LẠI ĐƠN HÀNG
-                        </button>
+                        <form asp-controller="Product" asp-action="Index">
+                            <button class="btn btn-warning w-100 py-3 fw-bold text-dark mb-2">
+                                <i class="bi bi-cart-plus"></i> Tiếp tục mua sắm
+                            </button>
+                        </form>
                     }
-
                     <a href="/User/Orders" class="btn btn-outline-light w-100 mt-2">Quay lại danh sách</a>
                 </div>
             </div>

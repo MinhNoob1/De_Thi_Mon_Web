@@ -22,17 +22,28 @@ namespace BusinessLayers
         public async Task<string> SaveImageAsync(IFormFile image)
         {
             string fileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(image.FileName);
-            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "KhachHang");
+
+            string rootPath = _webHostEnvironment.WebRootPath;
+
+            if (_webHostEnvironment.ApplicationName.Contains(".Shop"))
+            {
+                rootPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "SV22T1080075.Admin", "wwwroot");
+            }
+
+            string uploadsFolder = Path.Combine(rootPath, "images", "KhachHang");
             if (!Directory.Exists(uploadsFolder))
             {
                 Directory.CreateDirectory(uploadsFolder);
             }
+
             string filePath = Path.Combine(uploadsFolder, fileName);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await image.CopyToAsync(fileStream);
             }
-            return fileName;
+
+            // LUÔN trả về định dạng chuỗi có dấu gạch chéo để đồng bộ DB
+            return $"/images/KhachHang/{fileName}";
         }
         public async Task<PaginatedList<KhachHang>> GetPagedListAsync(KhachHangSearchModel search)
         {

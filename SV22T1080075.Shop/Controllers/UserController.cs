@@ -62,7 +62,11 @@ namespace SV22T1080075.Shop.Controllers
                 ViewBag.Error = "Tài khoản hoặc mật khẩu không đúng!";
                 return View();
             }
-
+            if (user.DangHoatDong == false)
+            {
+                ViewBag.Error = "Tài khoản của bạn đã bị khóa.";
+                return View();
+            }
             // Tạo thông tin định danh (Claims)
             var claims = new List<Claim>
             {
@@ -135,49 +139,27 @@ namespace SV22T1080075.Shop.Controllers
         [HttpPost]
         public async Task<IActionResult> Profile(KhachHang model, IFormFile? uploadPhoto)
         {
-            int userId = GetUserId(); 
+            int userId = GetUserId();
+            var userInDb = await _context.KhachHangs.FindAsync(userId);
+            if (userInDb == null) return RedirectToAction("Logout");
 
-            // Lấy dữ liệu gốc từ DB để đảm bảo an toàn
-            var userInDb = await _context.KhachHangs.FindAsync(userId); 
-            if (userInDb == null) return RedirectToAction("Logout"); 
-
-            // Cập nhật thông tin cơ bản
-            userInDb.HoTen = model.HoTen; 
-            userInDb.DienThoai = model.DienThoai; 
+            userInDb.HoTen = model.HoTen;
+            userInDb.DienThoai = model.DienThoai;
             userInDb.DiaChi = model.DiaChi;
             userInDb.MaTinh = model.MaTinh;
 
-            // --- XỬ LÝ UPLOAD ẢNH SANG PROJECT ADMIN ---
+            // Sử dụng Service đã được cập nhật ở bước 1
             if (uploadPhoto != null && uploadPhoto.Length > 0)
             {
-                string fileName = $"{DateTime.Now.Ticks}_{uploadPhoto.FileName}"; 
-
-                // 1. Xác định đường dẫn tuyệt đối đến thư mục images/KhachHang của project Admin
-                string adminRootPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "SV22T1080075.Admin", "wwwroot");
-                string folderPath = Path.Combine(adminRootPath, "images", "KhachHang");
-
-                // 2. Tạo thư mục nếu chưa tồn tại trong Admin
-                if (!Directory.Exists(folderPath))
-                {
-                    Directory.CreateDirectory(folderPath); 
-                }
-
-                // 3. Lưu file vật lý vào Admin
-                string filePath = Path.Combine(folderPath, fileName); 
-                using (var stream = new FileStream(filePath, FileMode.Create)) 
-                {
-                    await uploadPhoto.CopyToAsync(stream); 
-                }
-
-                // 4. Lưu đường dẫn tương đối vào Database
-                userInDb.HinhAnh = $"/images/KhachHang/{fileName}"; 
+                // Service sẽ tự lo việc lưu vào folder Admin và trả về chuỗi "/images/KhachHang/..."
+                userInDb.HinhAnh = await _khachHangService.SaveImageAsync(uploadPhoto);
             }
 
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
             TempData["Success"] = "Cập nhật hồ sơ thành công!";
             ViewBag.ListTinhThanh = await _context.TinhThanhs.OrderBy(t => t.TenTinh).ToListAsync();
 
-            return View(userInDb); 
+            return View(userInDb);
         }
 
         // 6. ĐỔI MẬT KHẨU
