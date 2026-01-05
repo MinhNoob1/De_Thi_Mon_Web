@@ -20,51 +20,51 @@ namespace SV22T1080075.Shop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(MatHangSearchModel search)
+        // GET: Dữ liệu ban đầu cho trang danh sách sản phẩm
+        public IActionResult Index()
         {
-            // --- LOGIC XỬ LÝ SESSION ---
+            // 1. Lấy lại trạng thái tìm kiếm cũ từ Session (nếu có)
+            var search = HttpContext.Session.GetObject<MatHangSearchModel>(PRODUCT_SEARCH_SESSION);
 
-            // Trường hợp 1: Nếu search.Page == 0 nghĩa là người dùng vào trang Product từ Menu 
-            // (không có tham số trên URL) -> Ta sẽ lấy lại trạng thái cũ từ Session.
-            if (search.Page == 0)
+            // Nếu chưa có session (lần đầu vào), tạo mới với giá trị mặc định
+            if (search == null)
             {
-                var searchCondition = HttpContext.Session.GetObject<MatHangSearchModel>(PRODUCT_SEARCH_SESSION);
-                if (searchCondition != null)
+                search = new MatHangSearchModel
                 {
-                    search = searchCondition;
-                }
-                else
-                {
-                    // Nếu chưa có session thì thiết lập mặc định
-                    search.Page = 1;
-                    search.PageSize = 12;
-                }
-            }
-            else
-            {
-                // Trường hợp 2: Người dùng vừa bấm nút Tìm kiếm/Chuyển trang/Sắp xếp
-                // (có tham số gửi lên) -> Ta sẽ lưu trạng thái mới này vào Session.
-
-                if (search.PageSize <= 0) search.PageSize = 12; // Đảm bảo PageSize luôn đúng
-                HttpContext.Session.SetObject(PRODUCT_SEARCH_SESSION, search);
+                    Page = 1,
+                    PageSize = 12,
+                    SearchName = "",
+                    MaLoai = 0,      
+                    GiaMin = null,   
+                    GiaMax = null,   
+                    SortOrder = ""
+                };
             }
 
-            // 1. Xử lý phân trang mặc định
-            if (search.Page == 0) search.Page = 1;
-            if (search.PageSize == 0) search.PageSize = 12; // Shop thường hiện 12 sp/trang
+            // 2. Lấy danh sách loại hàng để đổ vào Dropdown
+            ViewBag.LoaiHangs = _context.LoaiHangs.ToList();
 
-            // 2. Gọi Service lấy danh sách sản phẩm (chỉ lấy hàng đang bán)
-            var model = await _matHangService.GetPagedListAsync(search, onlyActive: true);
-
-            // 3. Lấy danh sách loại hàng để hiển thị bên Sidebar
-            ViewBag.LoaiHangs = await _context.LoaiHangs.ToListAsync();
-
-            // 4. Lưu lại SearchModel để giữ trạng thái lọc trên View
-            ViewBag.SearchModel = search;
-
-            return View(model);
+            // 3. Truyền SearchModel sang View để điền dữ liệu vào form (giữ trạng thái input)
+            return View(search);
         }
 
+        // GET: Lấy danh sách sản phẩm theo điều kiện tìm kiếm (dùng cho Ajax)
+        public async Task<IActionResult> List(MatHangSearchModel search)
+        {
+            // 1. Kiểm tra logic phân trang
+            if (search.PageSize <= 0) search.PageSize = 12;
+
+            // 2. LƯU TOÀN BỘ ĐIỀU KIỆN TÌM KIẾM VÀO SESSION
+            HttpContext.Session.SetObject(PRODUCT_SEARCH_SESSION, search);
+
+            // 3. Gọi Service xử lý truy vấn (Đảm bảo Service của bạn đã viết logic lọc theo GiaMin/GiaMax)
+            var model = await _matHangService.GetPagedListAsync(search, onlyActive: true);
+
+            // 4. Trả về Partial View
+            return PartialView("List", model);
+        }
+
+        // GET: Chi tiết sản phẩm
         public async Task<IActionResult> Detail(int id)
         {
             var matHang = await _matHangService.GetByIdAsync(id);

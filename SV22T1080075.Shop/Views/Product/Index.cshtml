@@ -1,188 +1,107 @@
-﻿@model PaginatedList<MatHang>
-
+﻿@model MatHangSearchModel
 @{
-    ViewData["Title"] = "Cửa hàng - FoodMart";
-    var searchModel = ViewBag.SearchModel as MatHangSearchModel ?? new MatHangSearchModel();
-    var loaiHangs = ViewBag.LoaiHangs as List<LoaiHang> ?? new List<LoaiHang>();
+    ViewData["Title"] = "Cửa hàng";
+    var loaiHangs = ViewBag.LoaiHangs as List<Models.LoaiHang> ?? new List<Models.LoaiHang>();
 }
 
 <section class="py-5">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-3">
-                <div class="sidebar-filter mt-5">
+            <div class="col-lg-3 d-flex flex-column">
 
-                    @* Form tìm kiếm chính: Gom tất cả điều kiện vào 1 form *@
-                    <form id="frmSearch" action="~/Product/Index" method="post">
-                        @* Input ẩn để lưu trang hiện tại *@
-                        <input type="hidden" name="Page" value="@searchModel.Page" />
-                        <input type="hidden" name="PageSize" value="@searchModel.PageSize" />
-                        <input type="hidden" name="SortOrder" id="SortOrder" value="@searchModel.SortOrder" />
+                <div class="sidebar-filter mt-2 p-4 bg-white rounded shadow-sm h-100 border">
+                    <form id="frmSearch" action="~/Product/List" method="get">
+                        <input type="hidden" name="Page" id="Page" value="@Model.Page" />
+                        <input type="hidden" name="PageSize" value="@Model.PageSize" />
 
-                        @* 1. Tìm kiếm theo tên *@
-                        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                            <h5 class="mb-3">Tìm kiếm</h5>
+                        @* 1. Tìm kiếm Tên *@
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-2">Tên sản phẩm</h6>
                             <div class="input-group">
-                                <input type="text" name="SearchName" value="@searchModel.SearchName"
-                                       class="form-control bg-light border-0"
-                                       placeholder="Nhập tên sản phẩm..." aria-label="Search">
-                                <button class="btn btn-primary" type="submit">
+                                <input type="text" name="SearchName" value="@Model.SearchName" class="form-control" placeholder="Nhập tên...">
+                                <button class="btn btn-primary" type="button" onclick="doSearch(1)">
                                     <i class="bi bi-search"></i>
                                 </button>
                             </div>
                         </div>
 
-                        @* 2. Lọc theo loại sản phẩm *@
-                        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                            <h5 class="mb-3">Danh mục</h5>
-                            <ul class="list-unstyled mb-0">
-                                <li class="mb-2">
-                                    <div class="form-check">
-                                        @* Radio button cho "Tất cả" *@
-                                        <input class="form-check-input" type="radio" name="MaLoai"
-                                               value="0" id="cat-all"
-                                               onchange="this.form.submit()"
-                                               @(searchModel.MaLoai == 0 ? "checked" : "")>
-                                        <label class="form-check-label" for="cat-all">Tất cả</label>
-                                    </div>
-                                </li>
-                                @foreach (var loai in loaiHangs)
+                        @* 2. Lọc Loại hàng *@
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-2">Danh mục</h6>
+                            <select class="form-select" name="MaLoai" onchange="doSearch(1)">
+                                <option value="0">-- Tất cả --</option>
+                                @foreach (var lh in loaiHangs)
                                 {
-                                    <li class="mb-2">
-                                        <div class="form-check">
-                                            @* Radio button cho từng loại *@
-                                            <input class="form-check-input" type="radio" name="MaLoai"
-                                                   value="@loai.MaLoaiHang" id="cat-@loai.MaLoaiHang"
-                                                   onchange="this.form.submit()"
-                                                   @(searchModel.MaLoai == loai.MaLoaiHang ? "checked" : "")>
-                                            <label class="form-check-label" for="cat-@loai.MaLoaiHang">@loai.TenLoaiHang</label>
-                                        </div>
-                                    </li>
+                                    if (Model.MaLoai == lh.MaLoaiHang)
+                                    {
+                                        <option value="@lh.MaLoaiHang" selected>@lh.TenLoaiHang</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@lh.MaLoaiHang">@lh.TenLoaiHang</option>
+                                    }
                                 }
-                            </ul>
+                            </select>
                         </div>
 
-                        @* 3. Lọc theo khoảng giá *@
-                        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                            <h5 class="mb-3">Khoảng giá</h5>
-                            <div class="price-range">
-                                <div class="row g-2 mb-3">
-                                    <div class="col-6">
-                                        <input type="number" name="GiaMin" value="@searchModel.GiaMin"
-                                               class="form-control bg-light border-0" placeholder="Từ" min="0">
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="number" name="GiaMax" value="@searchModel.GiaMax"
-                                               class="form-control bg-light border-0" placeholder="Đến" min="0">
-                                    </div>
+                        @* 3. Lọc Khoảng giá *@
+                        <div class="mb-4">
+                            <h6 class="fw-bold mb-2">Khoảng giá (VNĐ)</h6>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="text" name="GiaMin"
+                                           value="@(Model.GiaMin > 0 ? Model.GiaMin?.ToString("N0").Replace(",", ".") : "")"
+                                           class="form-control form-control-sm number-separator"
+                                           placeholder="Từ..." maxlength="15">
                                 </div>
-                                <button type="submit" class="btn btn-warning w-100 text-uppercase fw-bold rounded-2">
-                                    Áp dụng
-                                </button>
+                                <div class="col-6">
+                                    <input type="text" name="GiaMax"
+                                           value="@(Model.GiaMax > 0 ? Model.GiaMax?.ToString("N0").Replace(",", ".") : "")"
+                                           class="form-control form-control-sm number-separator"
+                                           placeholder="Đến..." maxlength="15">
+                                </div>
                             </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100 mt-3" onclick="doSearch(1)">
+                                <i class="bi bi-funnel"></i> Áp dụng giá
+                            </button>
                         </div>
-                    </form>
 
-                    @* Banner quảng cáo nhỏ *@
-                    <div class="card border-0 rounded-4 overflow-hidden shadow-sm">
-                        <img src="~/images/ad-image-1.png" class="img-fluid" alt="Ad">
-                    </div>
+                        @* Nút Reset *@
+                        <div class="d-grid mt-auto">
+                            <a href="javascript:;" onclick="clearFilters()" class="btn btn-link text-decoration-none text-muted small">
+                                <i class="bi bi-arrow-counterclockwise"></i> Xóa bộ lọc
+                            </a>
+                        </div>
+
+                        @* Banner quảng cáo nhỏ *@
+                        <div class="card border-0 rounded-4 overflow-hidden shadow-sm">
+                            <img src="~/images/ad-image-1.png" class="img-fluid" alt="Ad">
+                        </div>
+
+                    </form>
                 </div>
             </div>
 
+            @* --- KẾT QUẢ TÌM KIẾM --- *@
             <div class="col-lg-9">
-                <div class="d-flex justify-content-between align-items-center my-5">
-                    <h2 class="section-title mb-0">Sản phẩm (@Model.Items.Count)</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm border">
+                    <h4 class="fw-bold mb-0 text-primary">Danh sách sản phẩm</h4>
+                    <select class="form-select w-auto border-0 bg-light fw-bold" name="SortOrder" form="frmSearch" onchange="doSearch(1)">
+                        <!option value="" @(Model.SortOrder == "" ? "selected" : "")>Mặc định</!option>
+                        <!option value="price_asc" @(Model.SortOrder == "price_asc" ? "selected" : "")>Giá tăng dần</!option>
+                        <!option value="price_desc" @(Model.SortOrder == "price_desc" ? "selected" : "")>Giá giảm dần</!option>
+                        <!option value="name_asc" @(Model.SortOrder == "name_asc" ? "selected" : "")>Tên: A-Z</!option>
+                        <!option value="name_desc" @(Model.SortOrder == "name_desc" ? "selected" : "")>Tên: Z-A</!option>
+                    </select>
+                </div>
 
-                    @* Phần sắp xếp (Option nâng cao) *@
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="text-muted small">Sắp xếp:</span>
-                        <select class="form-select border-0 bg-light w-auto rounded-3" onchange="updateSort(this.value)">
-                            <option value="" selected="@(searchModel.SortOrder == "" ? "selected" : null)">Mới nhất</option>
-                            <option value="price_asc" selected="@(searchModel.SortOrder == "price_asc" ? "selected" : null)">Giá: Thấp đến Cao</option>
-                            <option value="price_desc" selected="@(searchModel.SortOrder == "price_desc" ? "selected" : null)">Giá: Cao đến Thấp</option>
-                            <option value="name_asc" selected="@(searchModel.SortOrder == "name_asc" ? "selected" : null)">Tên: A-Z</option>
-                            <option value="name_desc" selected="@(searchModel.SortOrder == "name_desc" ? "selected" : null)">Tên: Z-A</option>
-                        </select>
+                <div id="searchResult">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
                 </div>
-
-                <div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                    @foreach (var item in Model.Items)
-                    {
-                        <div class="col">
-                            <div class="product-item card border-0 shadow-sm h-100">
-                                @* Giả sử có logic giảm giá, nếu không có bỏ qua *@
-                                @* <span class="badge bg-success position-absolute m-3">-10%</span> *@
-
-                                <figure class="text-center p-3 mb-0">
-                                    <a href="~/Product/Detail/@item.MaMatHang" title="@item.TenMatHang">
-                                        <img src="~/images/MatHang/@(string.IsNullOrEmpty(item.HinhAnh) ? "no-image.png" : item.HinhAnh)"
-                                             class="img-fluid tab-image"
-                                             style="height: 180px; object-fit: contain;"
-                                             alt="@item.TenMatHang">
-                                    </a>
-                                </figure>
-
-                                <div class="card-body p-3 pt-0">
-                                    <h5 class="card-title" style="font-size: 1rem; min-height: 40px;">
-                                        <a href="~/Product/Detail/@item.MaMatHang" class="text-decoration-none text-dark">
-                                            @item.TenMatHang
-                                        </a>
-                                    </h5>
-
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="text-muted small">@item.DonViTinh</span>
-                                        <span class="text-warning small">
-                                            <i class="bi bi-star-fill"></i> 4.5
-                                        </span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="price fw-bold text-primary">@item.GiaBan.ToString("N0") ₫</span>
-
-                                        @* Nút thêm vào giỏ hàng *@
-                                        <a href="javascript:;" onclick="addToCart(@item.MaMatHang)" class="btn btn-outline-primary btn-sm rounded-circle">
-                                            <i class="bi bi-cart-plus"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    @if (!Model.Items.Any())
-                    {
-                        <div class="col-12 text-center py-5">
-                            <p class="text-muted">Không tìm thấy sản phẩm nào phù hợp.</p>
-                        </div>
-                    }
-                </div>
-
-                @if (Model.TotalPages > 1)
-                {
-                    <nav class="mt-5 py-4">
-                        <ul class="pagination justify-content-center">
-                            @* Nút Previous *@
-                            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                                <a class="page-link border-0 rounded-2 me-2" href="javascript:;" onclick="doSearch(@(Model.PageIndex - 1))">❮</a>
-                            </li>
-
-                            @* Các trang số *@
-                            @for (int i = 1; i <= Model.TotalPages; i++)
-                            {
-                                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
-                                    <a class="page-link border-0 rounded-2 me-2" href="javascript:;" onclick="doSearch(@i)">@i</a>
-                                </li>
-                            }
-
-                            @* Nút Next *@
-                            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                                <a class="page-link border-0 rounded-2" href="javascript:;" onclick="doSearch(@(Model.PageIndex + 1))">❯</a>
-                            </li>
-                        </ul>
-                    </nav>
-                }
             </div>
         </div>
     </div>
@@ -190,31 +109,80 @@
 
 @section Scripts {
     <script>
-        // Hàm xử lý phân trang: Cập nhật input Page ẩn và submit form
+        $(document).ready(function () {
+            // 1. Load dữ liệu ban đầu
+            doSearch(@Model.Page);
+
+            // 2. Xử lý nhập tiền: Tự động thêm dấu chấm phân cách hàng nghìn
+            $(document).on('input', '.number-separator', function(e) {
+                // Xóa các ký tự không phải số
+                let value = $(this).val().replace(/[^0-9]/g, '');
+
+                // Nếu có giá trị thì format
+                if (value) {
+                    // Dùng Intl để format chuẩn VN (dấu chấm)
+                    value = new Intl.NumberFormat('vi-VN').format(parseInt(value));
+                }
+
+                $(this).val(value);
+            });
+        });
+
         function doSearch(page) {
-            var form = document.getElementById("frmSearch");
-            form.elements["Page"].value = page;
-            form.submit();
+            var url = $("#frmSearch").prop("action");
+
+            // Lấy dữ liệu từ form
+            var postData = $("#frmSearch").serializeArray();
+
+            // 3. XỬ LÝ QUAN TRỌNG: Loại bỏ dấu chấm trong GiaMin, GiaMax trước khi gửi đi
+            postData.forEach(function(item) {
+                if (item.name === "GiaMin" || item.name === "GiaMax") {
+                    // Thay thế tất cả dấu chấm bằng rỗng
+                    item.value = item.value.split('.').join('');
+                }
+            });
+
+            // Cập nhật Page
+            var pageParam = postData.find(x => x.name === "Page");
+            if(pageParam) pageParam.value = page;
+            else postData.push({ name: "Page", value: page });
+
+            // Gửi AJAX
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: postData,
+                success: function (data) {
+                    $("#searchResult").html(data);
+                    $("#Page").val(page);
+                },
+                error: function () {
+                    alert("Lỗi tải dữ liệu. Vui lòng thử lại.");
+                }
+            });
         }
 
-        // Hàm thêm vào giỏ hàng (Sẽ cài đặt sau ở Controller Cart)
         function addToCart(id) {
-            // Tạm thời chuyển hướng, sau này sẽ dùng AJAX
+            // Hiện tại hàm này sẽ chuyển hướng sang trang giỏ hàng ngay lập tức
             window.location.href = "/Cart/Add/" + id;
         }
 
-        // Hàm xử lý khi thay đổi sắp xếp
-        function updateSort(sortValue) {
-            var sortInput = document.getElementById("SortOrder");
-            if(sortInput) {
-                sortInput.value = sortValue;
+        function clearFilters() {
+            // 1. Reset toàn bộ form về giá trị mặc định của HTML
+            document.getElementById("frmSearch").reset();
 
-                var form = document.getElementById("frmSearch");
-                form.elements["Page"].value = 1;
-                form.submit();
-            } else {
-                console.error("Không tìm thấy input SortOrder");
-            }
+            // 2. Xóa thủ công các giá trị input 
+            $("#frmSearch input[type='text'], #frmSearch input[type='number']").val("");
+            $("#frmSearch select").val("0");
+
+            // 3. Quan trọng: Gọi lại hàm tìm kiếm với trang 1.
+            doSearch(1);
         }
+
+        // Ngăn Enter submit form mặc định
+        $("#frmSearch").submit(function(e) {
+            e.preventDefault();
+            doSearch(1);
+        });
     </script>
 }

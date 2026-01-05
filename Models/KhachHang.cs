@@ -18,6 +18,7 @@ namespace Models
         [StringLength(100)]
         public string Email { get; set; } = null!;
 
+        [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
         [StringLength(100)]
         public string MatKhau { get; set; } = null!;
 

@@ -31,10 +31,9 @@ namespace SV22T1080075.Shop.Controllers
         public async Task<IActionResult> Add(int id, int quantity = 1)
         {
             int userId = GetCurrentUserId();
-            if (userId == 0) return RedirectToAction("Login", "User"); // Bảo vệ thêm
-
+            if (userId == 0) return RedirectToAction("Login", "User");
             await _gioHangService.AddToCart(userId, id, quantity);
-            return RedirectToAction("Index");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         public async Task<IActionResult> Remove(int id)
